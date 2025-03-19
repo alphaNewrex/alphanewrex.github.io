@@ -1,13 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 36 36">
-  <path fill="#000" d="M22.25 4h-8.5a1 1 0 0 0-.96.73l-5.54 19.4a.5.5 0 0 0 .62.62l5.05-1.44a2 2 0 0 0 1.38-1.4l3.22-11.66a.5.5 0 0 1 .96 0l3.22 11.67a2 2 0 0 0 1.38 1.39l5.05 1.44a.5.5 0 0 0 .62-.62l-5.54-19.4a1 1 0 0 0-.96-.73Z"/>
-  <path fill="url(#gradient)" d="M18 28a7.63 7.63 0 0 1-5-2c-1.4 2.1-.35 4.35.6 5.55.14.17.41.07.47-.15.44-1.8 2.93-1.22 2.93.6 0 2.28.87 3.4 1.72 3.81.34.16.59-.2.49-.56-.31-1.05-.29-2.46 1.29-3.25 3-1.5 3.17-4.83 2.5-6-.67.67-2.6 2-5 2Z"/>
-  <defs>
-    <linearGradient id="gradient" x1="16" x2="16" y1="32" y2="24" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#000"/>
-      <stop offset="1" stop-color="#000" stop-opacity="0"/>
-    </linearGradient>
-  </defs>
-	<style>
-    @media (prefers-color-scheme:dark){:root{filter:invert(100%)}}
-  </style>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="2048" height="2048" viewBox="444.44 506.39 2048 2048" xml:space="preserve">
+<desc>Created with Fabric.js 5.2.4</desc>
+<defs>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="transparent"></rect>
+<g transform="matrix(1 0 0 1 1024 1024)" id="e517d606-f978-4cbe-8d2b-4aa5d4bff4ca"  >
+<rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; visibility: hidden;" vector-effect="non-scaling-stroke"  x="-1024" y="-1024" rx="0" ry="0" width="2048" height="2048" />
+</g>
+<g transform="matrix(Infinity NaN NaN Infinity 0 0)" id="8d30022b-f4e3-4a3f-b89f-624d5fdd7e00"  >
+</g>
+<g transform="matrix(1.9 0 0 1.9 1418.37 1538.3)"  >
+<g style="" vector-effect="non-scaling-stroke"   >
+		<g transform="matrix(0.13 0 0 -0.13 0 -225.33)"  >
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-5125, -6746.91)" d="M 2803 7702 L 2670 7699 L 2670 6745 L 2670 5790 L 3265 5790 L 3860 5790 L 3860 6520 L 3860 7250 L 4115 7250 L 4370 7250 L 4372 6523 L 4375 5795 L 4708 5792 L 5040 5790 L 5040 6520 L 5040 7250 L 5296 7250 L 5552 7250 L 5550 6573 C 5549 6200 5548 5878 5549 5857 L 5550 5818 L 5592 5857 C 5615 5878 5648 5909 5665 5925 C 5765 6024 5929 6134 6115 6226 C 6350 6341 6542 6389 6805 6397 C 7045 6405 7313 6362 7504 6285 C 7539 6271 7570 6260 7573 6260 C 7577 6260 7580 6584 7580 6980 C 7580 7659 7579 7700 7563 7701 C 7528 7704 2932 7705 2803 7702 z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(0.13 0 0 -0.13 194.75 59.02)"  >
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-6585.66, -4614.23)" d="M 6720 5899 C 6362 5860 6016 5645 5810 5333 C 5672 5123 5602 4908 5593 4658 C 5586 4473 5600 4363 5651 4206 C 5758 3878 5974 3617 6258 3471 C 6459 3368 6599 3331 6811 3323 C 7043 3314 7258 3359 7473 3462 L 7580 3514 L 7580 3917 L 7580 4320 L 7161 4320 L 6742 4320 L 6741 4452 C 6740 4525 6742 4638 6746 4703 L 6753 4822 L 7164 4819 L 7575 4815 L 7578 5254 C 7580 5585 7577 5696 7568 5707 C 7554 5724 7431 5786 7350 5818 C 7160 5892 6928 5922 6720 5899 z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(0.13 0 0 -0.13 0 160.92)"  >
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-5125, -3850)" d="M 2670 3850 L 2670 2410 L 5125 2410 L 7580 2410 L 7580 2690 C 7580 2844 7576 2970 7572 2970 C 7567 2970 7532 2959 7494 2946 C 7264 2865 7103 2837 6855 2836 C 6695 2836 6647 2839 6550 2859 C 6186 2931 5862 3105 5605 3365 C 5341 3632 5162 3973 5085 4354 C 5048 4538 5040 4654 5040 4986 L 5040 5290 L 4705 5290 L 4370 5290 L 4370 4086 L 4370 2882 L 4165 2878 C 4052 2877 3937 2877 3910 2878 L 3860 2882 L 3860 4086 L 3860 5290 L 3265 5290 L 2670 5290 L 2670 3850 z" stroke-linecap="round" />
+</g>
+</g>
+</g>
 </svg>
