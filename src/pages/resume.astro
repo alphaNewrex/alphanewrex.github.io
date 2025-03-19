@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+---
+
+<BaseLayout title='Resume' sideBarActiveItemID='resume'>
+	<div class='container mx-auto px-4 sm:px-6 lg:px-8'>
+		<div class='mb-5'>
+			<div class='text-3xl w-full font-bold'>Resume</div>
+		</div>
+
+		<div class='mb-3'>
+			<a
+				href='/resume.pdf'
+				download
+				class='bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center'
+			>
+				<svg
+					class='w-4 h-4 mr-2'
+					fill='none'
+					stroke='currentColor'
+					viewBox='0 0 24 24'
+					xmlns='http://www.w3.org/2000/svg'
+				>
+					<path
+						stroke-linecap='round'
+						stroke-linejoin='round'
+						stroke-width='2'
+						d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4'
+					></path>
+				</svg>
+				<span>Download Resume</span>
+			</a>
+		</div>
+
+		<div class='pdf-container mx-auto w-full relative'>
+			<object
+				data='/resume.pdf'
+				type='application/pdf'
+				class='w-full h-full border rounded shadow-md'
+			>
+				<p>
+					Your browser doesn't support embedded PDFs.
+					<a href='/resume.pdf'>Click here to download the PDF</a>.
+				</p>
+			</object>
+		</div>
+	</div>
+</BaseLayout>
+
+<style>
+	.pdf-container {
+		aspect-ratio: 1/1.4;
+		max-height: 85vh;
+		max-width: 1000px;
+		margin-bottom: 2rem;
+	}
+
+	@media (max-width: 768px) {
+		.pdf-container {
+			max-height: 75vh;
+		}
+	}
+</style>
