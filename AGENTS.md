@@ -16,5 +16,6 @@
 
 ## Deployment
 
-- GitHub Pages deploys static `dist/` output on pushes to `main`.
-- `.github/workflows/astro.yml` and `.github/workflows/astro-1.yml` are duplicate workflows. Both still assume Node 20, npm, and `package-lock.json`, which conflicts with the current Astro 6/pnpm setup; do not treat CI as current until that migration is completed in both files or they are deduplicated.
+- `.github/workflows/astro.yml` is the only workflow: one job that builds with pnpm on Node 22 and publishes `dist/` to GitHub Pages on pushes to `main`.
+- `pnpm/action-setup` reads the pnpm version from the `packageManager` field in `package.json`; keep that field in sync with the pnpm you use locally.
+- CI runs `pnpm install --frozen-lockfile`, so commit `pnpm-lock.yaml` alongside any dependency change or the deploy fails.
