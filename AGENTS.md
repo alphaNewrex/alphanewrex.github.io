@@ -8,11 +8,12 @@
 
 ## Sources Of Truth
 
-- `README.md` is inherited Astrofy documentation and is stale about npm, Tailwind, and content configuration. Prefer `package.json`, `astro.config.mjs`, and `src/content.config.ts`.
+- `README.md` describes this site specifically; the inherited Astrofy template docs it replaced are in git history only.
 - This is one statically generated Astro site. Routes live in `src/pages`; shared page chrome is in `src/layouts/BaseLayout.astro`; global CSS enters every page through `src/components/BaseHead.astro`.
+- Files and directories in `src/pages` prefixed with `_` are deliberately excluded from routing. `_projects.astro`, `_services.astro`, and `_store/` are unfinished template pages kept for reference; do not rename them back without real content, and expect the unused `store` collection, `StoreItemLayout.astro`, `HorizontalShopItem.astro`, and `Card.astro` to have no routes referencing them.
 - Tailwind 4 is wired through `@tailwindcss/vite` in `astro.config.mjs`. Tailwind, Typography, and DaisyUI are configured in `src/styles/global.css`; do not restore `tailwind.config.cjs` or `@astrojs/tailwind`.
-- Blog and store collections use glob loaders in `src/content.config.ts`. Their Markdown lives under `src/content/{blog,store}`; frontmatter must satisfy that file's schemas. Entry IDs become `/blog/<id>` and `/store/<id>` routes, and blog tags generate `/blog/tag/<tag>` routes.
-- Site title and description live in `src/config.ts`. The canonical host also appears in `astro.config.mjs`, `public/robots.txt`, and `CNAME`; these currently disagree, so establish the intended host before changing them and then keep them aligned.
+- Blog and store collections use glob loaders in `src/content.config.ts`. Their Markdown lives under `src/content/{blog,store}`; frontmatter must satisfy that file's schemas. Blog entry IDs become `/blog/<id>` routes, and blog tags generate `/blog/tag/<tag>` routes.
+- Site title and description live in `src/config.ts`. The canonical host is `harshgujarathi.com` and appears in `astro.config.mjs`, `public/robots.txt`, and `CNAME`; change all three together. `astro.config.mjs` `site` feeds the sitemap, RSS, and every `og:`/`twitter:` URL, so a wrong value ships sitewide.
 
 ## Deployment
 
