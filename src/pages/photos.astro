@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+import { photoCaptions } from '../data/photo-captions'
+
+// Drop a file into src/images/photos/ and it shows up here. No edit needed.
+const files = import.meta.glob<{ default: ImageMetadata }>(
+	'/src/images/photos/*.{png,jpg,jpeg,webp}',
+	{ eager: true },
+)
+
+const photos = Object.entries(files)
+	.map(([path, mod]) => {
+		const name = path.split('/').pop()!.replace(/\.[^.]+$/, '')
+		return {
+			name,
+			src: mod.default,
+			caption: photoCaptions[name],
+			// Filename doubles as alt text when no caption is set.
+			alt: photoCaptions[name] ?? name.replace(/[-_]+/g, ' '),
+		}
+	})
+	.sort((a, b) => a.name.localeCompare(b.name))
+---
+
+<BaseLayout
+	title='Photos'
+	description='Photos I have taken, and a few of me.'
+	sideBarActiveItemID='photos'
+>
+	<div class='mb-5'>
+		<div class='text-3xl w-full font-bold'>Photos</div>
+	</div>
+
+	{
+		photos.length === 0 ? (
+			<div class='bg-base-200 border-l-4 border-secondary w-full p-4'>
+				<p class='font-bold'>Nothing here yet.</p>
+				<p>Photos will show up once there are some to show.</p>
+			</div>
+		) : (
+			<div class='columns-2 lg:columns-3 gap-4'>
+				{photos.map((photo) => (
+					<figure class='break-inside-avoid mb-4'>
+						<Image
+							src={photo.src}
+							widths={[320, 640, 960]}
+							sizes='(max-width: 1024px) 50vw, 33vw'
+							format='webp'
+							alt={photo.alt}
+							loading='lazy'
+							class='w-full h-auto rounded-lg'
+						/>
+						{photo.caption && (
+							<figcaption class='text-sm opacity-70 mt-1 px-1'>
+								{photo.caption}
+							</figcaption>
+						)}
+					</figure>
+				))}
+			</div>
+		)
+	}
+</BaseLayout>

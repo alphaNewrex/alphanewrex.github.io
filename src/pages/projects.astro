@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import ProjectCard from '../components/ProjectCard.astro'
+import { projects } from '../data/projects'
+import type { ImageMetadata } from 'astro'
+
+// Screenshots attach by filename: src/images/projects/<slug>.<ext>
+const files = import.meta.glob<{ default: ImageMetadata }>(
+	'/src/images/projects/*.{png,jpg,jpeg,webp}',
+	{ eager: true },
+)
+
+const imageBySlug = new Map<string, ImageMetadata>(
+	Object.entries(files).map(([path, mod]) => [
+		path.split('/').pop()!.replace(/\.[^.]+$/, ''),
+		mod.default,
+	]),
+)
+---
+
+<BaseLayout
+	title='Projects'
+	description='Things I built because I needed them.'
+	sideBarActiveItemID='projects'
+>
+	<div class='mb-5'>
+		<div class='text-3xl w-full font-bold'>Projects</div>
+	</div>
+
+	<p class='mb-8 text-lg opacity-80'>
+		None of these were built to fill a resume. Each one started as a problem I
+		actually had, and existed because nothing I could find solved it the way I
+		needed.
+	</p>
+
+	<div class='grid gap-6'>
+		{
+			projects.map((project) => (
+				<ProjectCard {...project} image={imageBySlug.get(project.slug)} />
+			))
+		}
+	</div>
+</BaseLayout>
