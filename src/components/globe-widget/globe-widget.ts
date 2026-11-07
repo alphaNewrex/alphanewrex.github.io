@@ -20,7 +20,8 @@ const DIZZY_ON = 14;
 const DIZZY_OFF = 6;
 const REDUCED_MOTION_STEP = Math.PI / 6;
 
-const VISIT_KEY = 'gw-last-visit';
+// Renamed from 'gw-last-visit', which an early build set without the visit landing.
+const VISIT_KEY = 'gw-visit-day';
 // Raw clicks only; the combo multiplier affects spin speed, never this count.
 const BPS_BEST_KEY = 'gw-best-bps';
 const BPS_WINDOW_MS = 3000;
@@ -334,7 +335,7 @@ function countUp(el: HTMLElement, value: number | null, format: Intl.NumberForma
 
 async function loadVisitors(): Promise<VisitorData | null> {
 	try {
-		const res = await fetch(`${VISITOR_API}/api/visitors`);
+		const res = await fetch(`${VISITOR_API}/api/visitors`, { cache: 'no-store' });
 		if (!res.ok) throw new Error(String(res.status));
 		return (await res.json()) as VisitorData;
 	} catch {
@@ -344,14 +345,22 @@ async function loadVisitors(): Promise<VisitorData | null> {
 }
 
 // Count each browser at most once per day. No cookies, nothing identifying is sent.
+// Marked as counted only after the Worker confirms, so a failed ping retries next load.
 function recordVisit() {
 	// Only the live site counts visits (the Worker also rejects other origins).
 	if (!/(^|\.)harshgujarathi\.com$/.test(location.hostname)) return;
+	let today: string;
 	try {
-		const today = new Date().toISOString().slice(0, 10);
+		today = new Date().toISOString().slice(0, 10);
 		if (localStorage.getItem(VISIT_KEY) === today) return;
-		if (navigator.sendBeacon(`${VISITOR_API}/api/visit`)) localStorage.setItem(VISIT_KEY, today);
 	} catch {
-		// Storage blocked (private mode etc.): skip counting rather than double count.
+		return; // Storage blocked: skip counting rather than double count.
 	}
+	fetch(`${VISITOR_API}/api/visit`, { method: 'POST', mode: 'cors', keepalive: true })
+		.then((res) => {
+			if (res.ok) localStorage.setItem(VISIT_KEY, today);
+		})
+		.catch(() => {
+			// Network error or blocked: try again on the next page load.
+		});
 }

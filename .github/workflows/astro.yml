@@ -1,4 +1,4 @@
-name: Deploy Astro site to Pages
+name: Deploy site and visitor API
 
 on:
   push:
@@ -15,8 +15,49 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            api:
+              - 'worker/**'
+              - 'migrations/**'
+              - 'wrangler.jsonc'
+
+  api:
+    name: Deploy visitor API (Cloudflare Worker)
+    needs: changes
+    # Only when the Worker, its config, or the schema changed; manual runs always deploy.
+    if: needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Apply D1 migrations
+        run: pnpm wrangler d1 migrations apply visitors --remote
+      - name: Deploy Worker
+        run: pnpm wrangler deploy
+
   deploy:
-    name: Build and Deploy
+    name: Build and Deploy site
+    needs: api
+    # Run after the API job, or when it was skipped; never after it failed.
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages

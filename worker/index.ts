@@ -22,7 +22,7 @@ const SITE_ORIGINS = new Set(['https://harshgujarathi.com', 'https://www.harshgu
 // Local development may read the data but never writes to it.
 const isLocalhost = (origin: string) => /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
 
-const VISITORS_CACHE_SECONDS = 300;
+const VISITORS_CACHE_SECONDS = 60;
 // Cloudflare's codes for Tor and unknown locations; nothing to plot.
 const SKIP_COUNTRIES = new Set(['T1', 'XX']);
 
@@ -40,13 +40,17 @@ export default {
 			if (request.method !== 'POST') return text('Method not allowed', 405);
 			if (!SITE_ORIGINS.has(origin)) return text('Forbidden', 403);
 			await recordVisit(request, env);
+			// Drop this location's cached totals so the new visit shows up right away.
+			ctx.waitUntil(edgeCache().delete(visitorsCacheKey(request)));
 			return new Response(null, { status: 204, headers: corsHeaders(origin) });
 		}
 
 		if (url.pathname === '/api/visitors') {
 			if (request.method !== 'GET') return text('Method not allowed', 405);
-			const response = await visitors(request, env, ctx);
-			return withCors(response, readable ? origin : null);
+			const response = withCors(await visitors(request, env, ctx), readable ? origin : null);
+			// Cached at the edge only; browsers always ask again so new visits aren't hidden.
+			response.headers.set('Cache-Control', 'no-store');
+			return response;
 		}
 
 		return text('Not found', 404);
@@ -68,10 +72,10 @@ async function recordVisit(request: Request, env: Env) {
 }
 
 async function visitors(request: Request, env: Env, ctx: Ctx): Promise<Response> {
-	// Edge-cache the aggregate so D1 is read a few times per 5 minutes, not per open.
-	// The cached copy carries no CORS headers; they're added per request by withCors.
-	const cache = (caches as unknown as { default: Cache }).default;
-	const key = new Request(new URL('/api/visitors', request.url).toString());
+	// Edge-cache the aggregate for a minute so D1 isn't read on every open; a new visit
+	// clears it (per Cloudflare location). The cached copy has no CORS headers; withCors adds them.
+	const cache = edgeCache();
+	const key = visitorsCacheKey(request);
 	const hit = await cache.match(key);
 	if (hit) return hit;
 
@@ -96,6 +100,9 @@ async function visitors(request: Request, env: Env, ctx: Ctx): Promise<Response>
 	ctx.waitUntil(cache.put(key, response.clone()));
 	return response;
 }
+
+const edgeCache = () => (caches as unknown as { default: Cache }).default;
+const visitorsCacheKey = (request: Request) => new Request(new URL('/api/visitors', request.url).toString());
 
 function corsHeaders(origin: string | null): Headers {
 	const headers = new Headers({ Vary: 'Origin' });
