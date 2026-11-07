@@ -1,33 +1,113 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import TimeLineElement from '../components/cv/TimeLine.astro'
+import Panel from '../components/Panel.astro'
+import PageIntro from '../components/PageIntro.astro'
+
+const certifications = [
+	{
+		label: 'Advanced Learning Algorithms (Coursera)',
+		href: 'https://www.coursera.org/account/accomplishments/certificate/EPA6WQ6SGTG8',
+	},
+	{
+		label: 'Machine Learning Specialization (Coursera)',
+		href: 'https://www.coursera.org/account/accomplishments/certificate/x789qq3wuf59',
+	},
+	{
+		label: 'Unsupervised Learning, Recommenders, Reinforcement Learning (Coursera)',
+		href: 'https://www.coursera.org/account/accomplishments/certificate/rysbdxhqnx7z',
+	},
+	{
+		label: 'Supervised Machine Learning: Regression and Classification (Coursera)',
+		href: 'https://www.coursera.org/account/accomplishments/certificate/murrf7adu53',
+	},
+	{
+		label: 'Fundamentals of Deep Learning (NVIDIA DLI)',
+		href: 'https://learn.nvidia.com/certificates?id=2dbbac2b743b43c0acbb9b7113fab1c0',
+	},
+]
+
+const courses = [
+	'Operating Systems',
+	'Data Structures and Algorithms',
+	'Object Oriented Programming',
+	'Computer Networks',
+	'Database Management and Systems',
+	'Computer Architecture',
+	'Foundations of Data Science',
+	'Deep Learning',
+	'Computational Neuroscience',
+	'Large Scale Distributed Systems',
+	'Design and Analysis of Algorithms',
+	'Microprocessor and Interfacing',
+	'Quantum Computing and Information',
+	'Machine Learning on Resource Constrained Devices',
+	'Compiler Construction',
+	'Applied Statistical Mathematics',
+]
+
+const skills = [
+	{
+		group: 'Languages',
+		items: ['Go', 'Python', 'C#', 'C++', 'Java', 'SQL', 'TypeScript', 'JavaScript', 'HTML', 'CSS'],
+	},
+	{
+		group: 'Fundamentals',
+		items: ['System Design', 'Object-Oriented Programming', 'Algorithms', 'SDLC', 'Version Control (Git)', 'Debugging'],
+	},
+	{
+		group: 'Backend',
+		items: ['.NET 8', 'ASP.NET Core', 'FastAPI', 'Gin', 'REST APIs', 'gRPC', 'Microservices', 'Next.js', 'React'],
+	},
+	{
+		group: 'Distributed',
+		items: ['Kafka', 'Celery', 'Redis Streams', 'Pub/Sub', 'Event-Driven Architecture', 'Docker', 'Kubernetes', 'Linux'],
+	},
+	{
+		group: 'Cloud & Data',
+		items: ['Azure', 'AWS', 'SageMaker', 'Bedrock', 'OpenTelemetry', 'CI/CD', 'PostgreSQL', 'MongoDB', 'Redis', 'pgvector'],
+	},
+	{
+		group: 'ML & LLMs',
+		items: [
+			'Deep Learning',
+			'PyTorch',
+			'Scikit-learn',
+			'LangChain',
+			'RAG',
+			'LLM Agents',
+			'LLM Evaluation',
+			'vLLM',
+			'GPU Inference',
+			'Speculative Decoding',
+			'Mixture-of-Experts (MoE)',
+		],
+	},
+]
 ---
 
-<BaseLayout title='Resume' sideBarActiveItemID='cv'>
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Profile</div>
-	</div>
+<BaseLayout title='CV' sideBarActiveItemID='cv'>
+	<PageIntro title='CV'>
+		<p>
+			I'm a Graduate Student Researcher at the NEXS Lab at Georgia Tech, pursuing
+			an MS in Computer Science. My work combines backend and distributed systems
+			with machine learning systems, including efficient LLM inference and
+			production RAG agents. Previously, I was a Software Engineer at Microsoft
+			working on Azure Migrate.
+		</p>
+	</PageIntro>
 
-	<div class='mb-10 text-justify'>
-		Hello! I'm Harsh Gujarathi, a Software Engineer at Microsoft, specializing
-		in Azure Cloud. I hold a degree in Computer Science with a minor in Data
-		Science from BITS Pilani - Goa Campus. I am passionate about designing
-		scalable cloud solutions and solving complex distributed system challenges.
-		Currently, I am working on Azure Cloud Migrate, focusing on Kubernetes,
-		distributed systems, databases, and system performance of applications
-		running on on-prem servers. My interests lie in distributed training,
-		federated learning, and large language models (LLMs) from tech giants like
-		DeepMind and OpenAI.
-	</div>
-
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Education</div>
-	</div>
-
-	<div class='time-line-container grid gap-4 mb-10'>
+	<Panel title='Education'>
+		<TimeLineElement
+			title='Master of Science - MS, Computer Science'
+			subtitle='Aug 2026 to May 2028 at Georgia Institute of Technology, Atlanta, Georgia'
+		>
+			GPA: 4.0/4.0<br />
+			Current coursework: Large Language Models, Machine Learning
+		</TimeLineElement>
 		<TimeLineElement
 			title='Bachelor of Engineering - BE, Computer Science'
-			subtitle='2020 to 2024 at Birla Institute of Technology and Science, Pilani - Goa Campus, India'
+			subtitle='Nov 2020 to Jun 2024 at Birla Institute of Technology and Science, Pilani - Goa Campus, India'
 		>
 			Grade: 9.2/10<br />
 			Activities and societies: Merit Scholarship Awardee (5 times), ASCII - Academic
@@ -46,30 +126,52 @@ import TimeLineElement from '../components/cv/TimeLine.astro'
 		>
 			Score: 96.4%
 		</TimeLineElement>
-	</div>
+	</Panel>
 
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Experience</div>
-	</div>
-
-	<div class='time-line-container mb-10'>
+	<Panel title='Experience'>
+		<TimeLineElement
+			title='Graduate Student Researcher'
+			subtitle='Aug 2026 to Present at NEXS Lab, Georgia Institute of Technology, Atlanta, Georgia'
+		>
+			<ul>
+				<li>
+					Accelerated Mixture-of-Experts (MoE) LLM inference with self-speculative
+					decoding, raising output throughput by 10–21%.
+				</li>
+				<li>
+					Benchmarked large-scale inference on vLLM and NVIDIA H200 GPUs, profiling
+					serving behavior across MoE model configurations.
+				</li>
+			</ul>
+		</TimeLineElement>
 		<TimeLineElement
 			title='Software Engineer'
-			subtitle='Jul 2024 to Present at Microsoft, Hyderabad, Telangana, India · On-site'
+			subtitle='Jul 2024 to Jul 2026 at Microsoft, Hyderabad, Telangana, India'
 		>
-			<ul class='list-disc ml-6 mb-6'>
+			<ul>
 				<li>
-					Working on Azure Cloud Migrate, focusing on Kubernetes, distributed
-					systems, databases, and system performance of applications running on
-					on-prem servers.
+					Built a RAG-based Azure Migrate assistant with an NL-to-KQL query-generation
+					pipeline, improving agent accuracy from 40% to 85%.
 				</li>
 				<li>
-					Collaborating with cross-functional teams to design and implement
-					scalable cloud solutions.
+					Established Check-In and PreProd evaluation pipelines for the Azure Migrate AI
+					agent, expanding Greenfield (happy-path) coverage from 0% to 100% and
+					detecting regressions before production deployment.
 				</li>
 				<li>
-					Skills: Kubernetes, Distributed Systems, Databases, System
-					Performance, Azure
+					Engineered a critical fallback extension for non-container workloads,
+					expanding assessment coverage to 99.9% across 100K+ enterprise workloads.
+				</li>
+				<li>
+					Owned the IIS discovery and assessment microservice end-to-end, combining
+					distributed pub/sub and concurrent task orchestration with versioned REST
+					contracts to support 4 app stacks (.NET Core, Python, PHP, Java) on VMware
+					vCenter.
+				</li>
+				<li>
+					Led RCAs and coordinated cross-team incident mitigations as on-call owner for
+					a production service with a 99.9% SLA, hardening reliability and security
+					through managed identity and CVE remediation.
 				</li>
 			</ul>
 		</TimeLineElement>
@@ -77,88 +179,34 @@ import TimeLineElement from '../components/cv/TimeLine.astro'
 			title='Member of Technical Staff Intern'
 			subtitle='Jan 2024 to Jun 2024 at DevRev, Bengaluru, Karnataka, India · On-site'
 		>
-			<ul class='list-disc ml-6 mb-6'>
+			<ul>
 				<li>
-					Worked on optimizing the Global Notifications Microservice by
-					implementing Rate Limiting, Throttling, Clustering, and Summarization
-					to enhance scalability and user experience.
+					Implemented Redis-based distributed rate limiting for the Global Notifications
+					microservice (60K+ daily events), eliminating drops under burst load.
 				</li>
 				<li>
-					Designed and implemented a notification rate limiter to prevent spam
-					and improve email delivery efficiency.
+					Developed a fault-tolerant deduplication engine using hierarchical clustering,
+					reducing duplicate notification spam by 85%.
 				</li>
 				<li>
-					Developed an advanced notification clustering mechanism reducing
-					redundancy and organizing updates more effectively.
-				</li>
-				<li>
-					Built a GenAI-powered notification summarizer leveraging OpenAI’s GPT
-					models and LangChain, enabling users to process notifications
-					efficiently.
-				</li>
-				<li>
-					Enhanced reminders, tasks, and bookmarking for better usability.
-				</li>
-				<li>
-					Took ownership of tasks, actively participated in design discussions,
-					debugging, and performance optimization, and contributed to improving
-					the overall notification workflow at DevRev.
-				</li>
-			</ul>
-		</TimeLineElement>
-		<TimeLineElement
-			title='First Degree Teaching Assistant'
-			subtitle='Aug 2023 to Dec 2023 at Department of CSIS BITS Pilani Goa Campus, Goa, India · On-site'
-		>
-			<ul class='list-disc ml-6 mb-6'>
-				<li>
-					Assisted in teaching CS F372 - Operating Systems and CS F342 -
-					Computer Architecture.
+					Designed an LLM-driven summarization pipeline (GPT-4) for digest
+					generation, compressing data throughput by 6x.
 				</li>
 			</ul>
 		</TimeLineElement>
 		<TimeLineElement
 			title='Software Engineer Intern'
-			subtitle='May 2023 to Jul 2023 at Microsoft, Hyderabad, Telangana, India · On-site'
+			subtitle='May 2023 to Jul 2023 at Microsoft, Hyderabad, Telangana, India'
 		>
-			<ul class='list-disc ml-6 mb-6'>
+			<ul>
 				<li>
-					Designed Customer Side Metrics for Monitoring Meters and Publishing
-					them to Azure Monitor and Geneva Dashboard.
+					Instrumented customer-side meter telemetry for the Azure Business Continuity
+					Center using OpenTelemetry and Geneva, enabling real-time observability for
+					V1 services.
 				</li>
 				<li>
-					Used OpenTelemetry and its Geneva Extension to Implement the Metrics
-					designed.
-				</li>
-				<li>
-					Actively contributed in the design decision of Azure Business
-					Continuity Center (V1 product) with the Azure Core Compute Team.
-				</li>
-				<li>
-					Skills: Programming, MSTest, Product Design, Telemetry, C#, .NET
-					Framework, Communication
-				</li>
-			</ul>
-		</TimeLineElement>
-		<TimeLineElement
-			title='First Degree Teaching Assistant'
-			subtitle='Jan 2023 to May 2023 at Department of CSIS BITS Pilani Goa Campus, Goa, India · On-site'
-		>
-			<ul class='list-disc ml-6 mb-6'>
-				<li>
-					Assisted in teaching CS F211 - Data Structures and Algorithms, CS F342
-					- Computer Architecture, and CS F424 - Software for Embedded Systems.
-				</li>
-			</ul>
-		</TimeLineElement>
-		<TimeLineElement
-			title='First Degree Teaching Assistant'
-			subtitle='Aug 2022 to Dec 2022 at Department of CSIS BITS Pilani Goa Campus, Goa, India · On-site'
-		>
-			<ul class='list-disc ml-6 mb-6'>
-				<li>
-					Assisted in teaching CS F213 - Object Oriented Programming and CS F214
-					- Logic in Computer Science.
+					Packaged the instrumentation as a reusable NuGet library with 99% test
+					coverage, adopted by adjacent teams to accelerate integration.
 				</li>
 			</ul>
 		</TimeLineElement>
@@ -166,7 +214,7 @@ import TimeLineElement from '../components/cv/TimeLine.astro'
 			title='Summer Intern'
 			subtitle='May 2022 to Jul 2022 at LTI - Larsen & Toubro Infotech, Mumbai, Maharashtra, India · Remote'
 		>
-			<ul class='list-disc ml-6 mb-6'>
+			<ul>
 				<li>Worked on the DataOps for their Software Fosfor Spectra.</li>
 				<li>
 					Coordinated with Developers working on new features and Test
@@ -183,7 +231,7 @@ import TimeLineElement from '../components/cv/TimeLine.astro'
 			title='Microsoft Engage Mentee'
 			subtitle='May 2022 to Jun 2022 at Microsoft, Remote'
 		>
-			<ul class='list-disc ml-6 mb-6'>
+			<ul>
 				<li>
 					Developed a fully functional android application that makes use of the
 					Facial Recognition technology.
@@ -198,105 +246,207 @@ import TimeLineElement from '../components/cv/TimeLine.astro'
 				</li>
 			</ul>
 		</TimeLineElement>
-	</div>
+	</Panel>
 
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Certifications</div>
-	</div>
+	<Panel title='Research Experience'>
+		<TimeLineElement
+			title='Undergraduate Research Assistant, Confluences of Computer Science Lab'
+			subtitle='Jan 2023 to Jul 2024 with Prof. Kunal Korgaonkar, BITS Pilani, Goa, India'
+		>
+			<ul>
+				<li>
+					Architected an LLM-driven modernization framework to parse complex,
+					undocumented legacy codebases; parsing based on code specifications to
+					understand and refactor legacy systems.
+				</li>
+				<li>
+					Engineered a privacy-preserving middleware layer atop Zulip; deployed a
+					distributed testbed to implement mixnet-style message batching and encrypted
+					sender identifiers.
+				</li>
+				<li>
+					Mitigated trace-through traffic analysis in controlled environments and
+					identified critical configuration enforcement vulnerabilities, documenting
+					the tension between cryptographic security and message latency.
+				</li>
+			</ul>
+		</TimeLineElement>
+		<TimeLineElement
+			title='Undergraduate Research Assistant, IoT Research Lab'
+			subtitle='Aug 2021 to Jul 2024 with Prof. Neena Goveas, BITS Pilani, Goa, India'
+		>
+			<ul>
+				<li>
+					Engineered a reproducible Digital Twin for campus solar installations,
+					benchmarking gradient boosting models (XGBoost) against Physics-Informed
+					Neural Networks (PINNs).
+				</li>
+				<li>
+					Achieved a 10% increase in predictive accuracy with PINNs but identified a
+					5x penalty in model size, quantifying the critical trade-off between model
+					fidelity and real-time deployment viability.
+				</li>
+				<li>
+					Modeled departmental TA allocation as an NP-Hard Constraint Satisfaction
+					Problem; led a team of 7 to engineer heuristic scheduling algorithms that
+					optimized assignments under strict course/student constraints.
+				</li>
+				<li>
+					Developed <i>Divyang</i>, an Android app for prosthetic recommendations;
+					deployed an end-to-end MobileNet SSD model finetuned via TensorFlow Lite to
+					enable efficient inference on resource-constrained edge devices.
+				</li>
+			</ul>
+		</TimeLineElement>
+	</Panel>
 
-	<ul class='list-disc mx-6 mb-10 grid gap-2'>
-		<li>
-			<a
-				href='https://www.coursera.org/account/accomplishments/certificate/EPA6WQ6SGTG8'
-				target='_blank'>Advanced Learning Algorithms (Coursera)</a
-			>
-		</li>
-		<li>
-			<a
-				href='https://www.coursera.org/account/accomplishments/certificate/x789qq3wuf59'
-				target='_blank'>Machine Learning Specialization (Coursera)</a
-			>
-		</li>
-		<li>
-			<a
-				href='https://www.coursera.org/account/accomplishments/certificate/rysbdxhqnx7z'
-				target='_blank'
-				>Unsupervised Learning, Recommenders, Reinforcement Learning (Coursera)</a
-			>
-		</li>
-		<li>
-			<a
-				href='https://www.coursera.org/account/accomplishments/certificate/murrf7adu53'
-				target='_blank'
-				>Supervised Machine Learning: Regression and Classification (Coursera)</a
-			>
-		</li>
-		<li>
-			<a
-				href='https://learn.nvidia.com/certificates?id=2dbbac2b743b43c0acbb9b7113fab1c0'
-				target='_blank'>Fundamentals of Deep Learning (NVIDIA DLI)</a
-			>
-		</li>
-	</ul>
+	<Panel title='Teaching'>
+		<TimeLineElement
+			title='Teaching Assistant, Department of CSIS'
+			subtitle='Aug 2022 to Dec 2023 at BITS Pilani, Goa, India'
+		>
+			<ul>
+				<li>
+					Courses: Operating Systems, Computer Architecture (x2), Software for Embedded
+					Systems, Data Structures &amp; Algorithms, Object Oriented Programming, Logic in
+					Computer Science.
+				</li>
+				<li>
+					Facilitated lab sessions and tutorials for 7 undergraduate and graduate
+					courses, mentoring students on complex topics including Linux system calls,
+					Verilog/FPGA design, and MIPS architecture.
+				</li>
+				<li>
+					Designed comprehensive lab questions and reference materials for core
+					systems courses, and evaluated assignments for graduate-level VLSI
+					architectures.
+				</li>
+			</ul>
+		</TimeLineElement>
+		<TimeLineElement
+			title='Instructor, Centre for Technical Education'
+			subtitle='Mar 2022 to Jun 2022 at BITS Pilani, Goa, India'
+		>
+			<ul>
+				<li>
+					Designed the curriculum and taught a comprehensive Android Development
+					course to a batch of 45 students, covering application lifecycle, UI/UX
+					design, and backend integration.
+				</li>
+			</ul>
+		</TimeLineElement>
+	</Panel>
 
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Undergraduate Courses</div>
-	</div>
+	<Panel title='Certifications'>
+		<ul class='cv-links'>
+			{
+				certifications.map((c) => (
+					<li>
+						<a href={c.href} target='_blank' rel='noopener'>
+							<span>{c.label}</span>
+							<svg viewBox='0 0 16 16' aria-hidden='true'>
+								<path d='M5 11L11 5M6 5h5v5' />
+							</svg>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</Panel>
 
-	<ul class='list-disc md:columns-2 columns-2 mx-6 mb-10'>
-		<li>Operating Systems</li>
-		<li>Data Structures and Algorithms</li>
-		<li>Object Oriented Programming</li>
-		<li>Computer Networks</li>
-		<li>Database Management and Systems</li>
-		<li>Computer Architecture</li>
-		<li>Foundations of Data Science</li>
-		<li>Deep Learning</li>
-		<li>Computational Neuroscience</li>
-		<li>Large Scale Distributed Systems</li>
-		<li>Design and Analysis of Algorithms</li>
-		<li>Microprocessor and Interfacing</li>
-		<li>Quantum Computing and Information</li>
-		<li>Machine Learning on Resource Constrained Devices</li>
-		<li>Compiler Construction</li>
-		<li>Applied Statistical Mathematics</li>
-	</ul>
+	<Panel title='Undergraduate Courses'>
+		<ul class='cv-dots'>
+			{courses.map((course) => <li>{course}</li>)}
+		</ul>
+	</Panel>
 
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Skills</div>
-	</div>
-
-	<ul class='list-disc md:columns-5 columns-2 mx-6'>
-		<li>C#</li>
-		<li>.NET Framework</li>
-		<li>Java</li>
-		<li>Dart</li>
-		<li>Python</li>
-		<li>C++</li>
-		<li>Android Development</li>
-		<li>Qiskit</li>
-		<li>Kotlin</li>
-		<li>Flutter</li>
-		<li>User Interface Design</li>
-		<li>Web Development</li>
-		<li>JavaScript</li>
-		<li>Markdown</li>
-		<li>LaTeX</li>
-		<li>PowerShell</li>
-		<li>Go</li>
-		<li>Windows Terminal</li>
-		<li>AWS</li>
-		<li>Azure</li>
-		<li>Datadog</li>
-		<li>Google Cloud</li>
-		<li>NodeJS</li>
-		<li>Firebase</li>
-		<li>MongoDB</li>
-		<li>Redis</li>
-		<li>Appwrite</li>
-		<li>PyTorch</li>
-		<li>TensorFlow</li>
-		<li>NumPy</li>
-		<li>Pandas</li>
-	</ul>
+	<Panel title='Skills'>
+		<div class='grid gap-6 md:grid-cols-2'>
+			{
+				skills.map((s, i) => (
+					<div class:list={{ 'md:col-span-2': i === skills.length - 1 }}>
+						<h3 class='font-semibold mb-3'>{s.group}</h3>
+						<ul class='cv-chips'>
+							{s.items.map((item) => (
+								<li>{item}</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</Panel>
 </BaseLayout>
+
+<style>
+	.cv-links {
+		display: grid;
+		gap: 8px;
+	}
+	.cv-links a {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 12px 16px;
+		border-radius: 12px;
+		border: 1px solid var(--ds-line);
+		transition:
+			border-color 160ms ease,
+			transform 220ms cubic-bezier(0.34, 1.4, 0.64, 1);
+	}
+	.cv-links a:hover {
+		border-color: var(--ds-accent);
+		transform: translateX(4px);
+	}
+	.cv-links svg {
+		flex: none;
+		width: 14px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		opacity: 0.6;
+	}
+	.cv-links a:hover svg {
+		stroke: var(--ds-accent);
+		opacity: 1;
+	}
+
+	.cv-dots {
+		columns: 2;
+		column-gap: 32px;
+	}
+	.cv-dots li {
+		break-inside: avoid;
+		display: flex;
+		gap: 10px;
+		padding: 5px 0;
+	}
+	.cv-dots li::before {
+		content: '';
+		flex: none;
+		width: 6px;
+		height: 6px;
+		margin-top: 0.6em;
+		border-radius: 999px;
+		background: var(--ds-ink-faint);
+	}
+	@media (max-width: 640px) {
+		.cv-dots {
+			columns: 1;
+		}
+	}
+
+	.cv-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.cv-chips li {
+		padding: 5px 12px;
+		border-radius: 999px;
+		font-size: 0.875rem;
+		border: 1px solid var(--ds-line-strong);
+	}
+</style>

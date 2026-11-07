@@ -1,0 +1,74 @@
+---
+import { Image } from 'astro:assets';
+import photo from '../images/profile/harsh.jpeg';
+
+// A ring of dots around the photo, matching the dot-matrix theme.
+const RING_DOTS = 44;
+---
+
+<div class="pp">
+	<svg class="pp-ring" viewBox="0 0 200 200" aria-hidden="true">
+		{
+			Array.from({ length: RING_DOTS }, (_, i) => {
+				const a = (i / RING_DOTS) * Math.PI * 2;
+				return <circle cx={100 + 96 * Math.cos(a)} cy={100 + 96 * Math.sin(a)} r={i % 4 === 0 ? 2.6 : 1.7} />;
+			})
+		}
+	</svg>
+	<Image
+		class="pp-img"
+		src={photo}
+		alt="Harsh Gujarathi"
+		widths={[176, 352, 528]}
+		sizes="176px"
+		loading="eager"
+		fetchpriority="high"
+	/>
+</div>
+
+<style>
+	.pp {
+		position: relative;
+		flex: none;
+		align-self: flex-start; /* don't stretch to an oval in the stacked mobile layout */
+		width: 176px;
+		height: 176px;
+		padding: 14px;
+	}
+	.pp-ring {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		fill: var(--ds-ink);
+		opacity: 0.55;
+		animation: pp-spin 60s linear infinite;
+		transition: opacity 300ms ease;
+	}
+	.pp:hover .pp-ring {
+		opacity: 1;
+		fill: var(--ds-accent);
+	}
+	.pp-img {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 30%;
+		border-radius: 999px;
+		transition: transform 300ms cubic-bezier(0.34, 1.4, 0.64, 1);
+	}
+	.pp:hover .pp-img {
+		transform: scale(1.03);
+	}
+	@keyframes pp-spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.pp-ring {
+			animation: none;
+		}
+	}
+</style>

@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import HorizontalCard from '../components/HorizontalCard.astro'
+import ProfilePhoto from '../components/ProfilePhoto.astro'
+import Panel from '../components/Panel.astro'
 import { getCollection } from 'astro:content'
 
 const posts = (await getCollection('blog')).sort(
@@ -11,67 +13,79 @@ const last_posts = posts.slice(0, 3)
 ---
 
 <BaseLayout sideBarActiveItemID='home'>
-	<div class='pb-12 mt-5'>
-		<div class='text-xl py-1'>Hey there 👋</div>
-		<div class='text-5xl font-bold'>I'm Harsh Gujarathi</div>
-		<div class='text-3xl py-3 font-bold'>
-			Software Engineer and Tech Enthusiast
-		</div>
-		<div class='py-2'>
-			<text class='text-lg'>
+	<div class='pb-12 mt-2'>
+		<Panel>
+			<div class='flex flex-col-reverse gap-6 md:flex-row md:items-center md:justify-between md:gap-10'>
+				<div>
+					<div class='text-xl py-1'>Hey there 👋</div>
+					<div class='text-5xl font-bold'>I'm Harsh Gujarathi</div>
+					<div class='text-3xl py-3 font-bold'>
+						Software Engineer and ML Systems Researcher
+					</div>
+				</div>
+				<ProfilePhoto />
+			</div>
+		</Panel>
+
+		<Panel>
+			<div class='space-y-5 text-lg leading-relaxed'>
 				<p>
-					Hey there! I'm a Software Engineer at Microsoft, working on Azure
-					Cloud. I recently graduated with a degree in Computer Science and a
-					minor in Data Science from BITS Pilani, Goa Campus.
+					I'm a Graduate Student Researcher at the NEXS Lab at Georgia Tech,
+					pursuing an MS in Computer Science. I previously worked as a Software
+					Engineer at Microsoft on Azure Migrate.
 				</p>
-				<br />
 
 				<p>
-					I love building and understanding systems, solving distributed systems
-					challenges, and designing cloud solutions that are scalable and
-					reliable. Tackling real-world problems through cloud technologies is
-					something I genuinely enjoy.
+					I build backend and distributed systems that make AI products reliable
+					in production. My recent work spans RAG agents, evaluation pipelines,
+					event-driven services, and efficient LLM inference.
 				</p>
-				<br />
 
 				<p>
-					I've been following Android developments since the Gingerbread days
-					(Android 2.3)—the Androidify era was iconic! I enjoy building native
-					Android and cross-platform apps. Lately, I've been diving into deep
-					learning models and how they connect with distributed systems. I’m
-					also excited to explore native iOS development soon.
+					At Georgia Tech, I am studying self-speculative decoding for
+					Mixture-of-Experts (MoE) models and profiling vLLM inference on NVIDIA
+					H200 GPUs. I also enjoy turning real problems into useful tools, from
+					job discovery to GRE practice.
 				</p>
-				<br />
+			</div>
+		</Panel>
 
-				<p>
-					Outside of work, I spend a good amount of time at the gym. It's my
-					go-to for staying focused, energized, and pushing my limits both
-					physically and mentally. I also love playing board and card games with
-					friends—there's something thrilling about strategy and friendly
-					competition. When I'm not lifting weights or gaming with friends,
-					you'll probably find me exploring fictional worlds through manga or
-					video games. I'm forever inspired by creators like Eiichiro Oda and
-					Stan Lee for shaping these incredible universes.
+		<Panel>
+			<p class='text-lg leading-relaxed'>
+				Outside of work, I spend a good amount of time at the gym. It's my
+				go-to for staying focused, energized, and pushing my limits both
+				physically and mentally. I also love playing board and card games with
+				friends—there's something thrilling about strategy and friendly
+				competition. When I'm not lifting weights or gaming with friends,
+				you'll probably find me exploring fictional worlds through manga or
+				video games. I'm forever inspired by creators like Eiichiro Oda and
+				Stan Lee for shaping these incredible universes.
+			</p>
+		</Panel>
+
+		<Panel tone='ink'>
+			<div class='flex flex-col gap-5 md:flex-row md:items-center md:justify-between'>
+				<p class='text-xl font-bold leading-snug md:max-w-md'>
+					Building systems, learning constantly, and open to interesting problems.
 				</p>
-				<br />
-
-				<p>
-					<b
-						>🌟 Tech help on speed dial! Feel free to reach out! 🚀 #TechSupport</b
+				<div class='flex flex-wrap gap-3'>
+					<a
+						class='ds-btn ds-btn--inverse'
+						href='https://www.linkedin.com/in/hgujarathi'
+						target='_blank'
 					>
-				</p>
-			</text>
-		</div>
-		<div class='mt-8'>
-			<a
-				class='btn btn-outline ml-5'
-				href='https://www.linkedin.com/in/harsh-gujarathi-39474a1b8/'
-				target='_blank'
-			>
-				Let's connect!</a
-			>
-			<a href='/cv' target='_blank' class='btn btn-outline ml-5'> My Resume </a>
-		</div>
+						Let's connect!</a
+					>
+					<a
+						href='/resume'
+						target='_blank'
+						class='ds-btn ds-btn--inverse-outline'
+					>
+						My Resume
+					</a>
+				</div>
+			</div>
+		</Panel>
 	</div>
 
 	<!-- <div>

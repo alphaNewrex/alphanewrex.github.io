@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
+import PageIntro from '../components/PageIntro.astro'
+import Panel from '../components/Panel.astro'
 import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
 import { photoCaptions } from '../data/photo-captions'
@@ -29,20 +31,20 @@ const photos = Object.entries(files)
 	description='Photos I have taken, and a few of me.'
 	sideBarActiveItemID='photos'
 >
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Photos</div>
-	</div>
+	<PageIntro title='Photos'>
+		<p>Photos I have taken, and a few of me.</p>
+	</PageIntro>
 
 	{
 		photos.length === 0 ? (
-			<div class='bg-base-200 border-l-4 border-secondary w-full p-4'>
+			<Panel>
 				<p class='font-bold'>Nothing here yet.</p>
-				<p>Photos will show up once there are some to show.</p>
-			</div>
+				<p class='ds-muted'>Photos will show up once there are some to show.</p>
+			</Panel>
 		) : (
-			<div class='columns-2 lg:columns-3 gap-4'>
+			<div class='columns-2 lg:columns-3 gap-4 mt-5'>
 				{photos.map((photo) => (
-					<figure class='break-inside-avoid mb-4'>
+					<figure class='photo-frame break-inside-avoid mb-4'>
 						<Image
 							src={photo.src}
 							widths={[320, 640, 960]}
@@ -50,10 +52,10 @@ const photos = Object.entries(files)
 							format='webp'
 							alt={photo.alt}
 							loading='lazy'
-							class='w-full h-auto rounded-lg'
+							class='w-full h-auto rounded-xl'
 						/>
 						{photo.caption && (
-							<figcaption class='text-sm opacity-70 mt-1 px-1'>
+							<figcaption class='text-sm ds-muted mt-2 px-1'>
 								{photo.caption}
 							</figcaption>
 						)}
@@ -63,3 +65,19 @@ const photos = Object.entries(files)
 		)
 	}
 </BaseLayout>
+
+<style>
+	.photo-frame {
+		padding: 8px;
+		border-radius: 18px;
+		background: var(--ds-surface);
+		border: 1px solid var(--ds-line-strong);
+		transition:
+			transform 300ms cubic-bezier(0.34, 1.4, 0.64, 1),
+			box-shadow 300ms ease;
+	}
+	.photo-frame:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 14px 34px rgb(0 0 0 / 0.12);
+	}
+</style>

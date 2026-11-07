@@ -1,0 +1,113 @@
+---
+// Light/dark switch: a round dot-matrix button fixed top-right, matching the menu
+// (top-left) and the visitor globe (bottom-right). The icon is chosen in CSS from
+// <html data-theme>, so it is right on first paint; the script only flips the theme.
+const PITCH = 6;
+const R = 2.4;
+const SIZE = 9;
+const C = (SIZE - 1) / 2;
+
+type Dot = { x: number; y: number; d: number };
+const at = (x: number, y: number): Dot => ({ x: x * PITCH + PITCH / 2, y: y * PITCH + PITCH / 2, d: Math.hypot(x - C, y - C) });
+const grid = Array.from({ length: SIZE * SIZE }, (_, i) => [i % SIZE, Math.floor(i / SIZE)] as const);
+
+// Sun: a solid 3x3 core and eight rays.
+const rays = [[4, 0], [4, 8], [0, 4], [8, 4], [1, 1], [7, 1], [1, 7], [7, 7]];
+const sun = grid
+	.filter(([x, y]) => (Math.abs(x - C) <= 1 && Math.abs(y - C) <= 1) || rays.some(([rx, ry]) => rx === x && ry === y))
+	.map(([x, y]) => at(x, y));
+
+// Moon: a disc with an offset disc cut out of it.
+const moon = grid
+	.filter(([x, y]) => Math.hypot(x - C, y - C) <= 4 && Math.hypot(x - 6.2, y - 2.3) > 3.4)
+	.map(([x, y]) => at(x, y));
+---
+
+<button class="tt ds-icon-btn" type="button" aria-label="Switch to dark mode" title="Switch theme">
+	<svg viewBox={`0 0 ${SIZE * PITCH} ${SIZE * PITCH}`} aria-hidden="true">
+		<g class="tt-sun">
+			{sun.map((p) => <circle cx={p.x} cy={p.y} r={R} style={`--delay:${Math.round(p.d * 28)}ms`} />)}
+		</g>
+		<g class="tt-moon">
+			{moon.map((p) => <circle cx={p.x} cy={p.y} r={R} style={`--delay:${Math.round(p.d * 28)}ms`} />)}
+		</g>
+	</svg>
+</button>
+
+<style>
+	.tt {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 61;
+	}
+	.tt svg {
+		width: 28px;
+		overflow: visible;
+	}
+	.tt circle {
+		fill: var(--ds-ink);
+		transform-box: fill-box;
+		transform-origin: center;
+		transition:
+			transform var(--ds-dur-slow) var(--ds-ease-spring) var(--delay),
+			opacity var(--ds-dur) ease var(--delay),
+			fill var(--ds-dur) ease;
+	}
+	.tt-sun circle:nth-child(5) {
+		fill: var(--ds-accent);
+	}
+
+	/* Light theme: sun showing, moon collapsed. */
+	.tt-moon circle {
+		opacity: 0;
+		transform: scale(0);
+	}
+	/* Dark theme: the reverse. */
+	:global([data-theme='black']) .tt-sun circle {
+		opacity: 0;
+		transform: scale(0);
+	}
+	:global([data-theme='black']) .tt-moon circle {
+		opacity: 1;
+		transform: none;
+	}
+
+	.tt:hover svg {
+		animation: tt-spin 900ms var(--ds-ease-spring);
+	}
+	@keyframes tt-spin {
+		from {
+			transform: rotate(-30deg);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.tt {
+			top: 14px;
+			right: 14px;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.tt circle {
+			transition: opacity 150ms ease;
+		}
+		.tt:hover svg {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	import { currentMode, followSystem, onModeChange, setMode } from '../lib/theme';
+
+	const button = document.querySelector<HTMLButtonElement>('.tt');
+	if (button) {
+		const sync = () =>
+			button.setAttribute('aria-label', currentMode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+		button.addEventListener('click', () => setMode(currentMode() === 'dark' ? 'light' : 'dark'));
+		onModeChange(sync);
+		followSystem();
+		sync();
+	}
+</script>

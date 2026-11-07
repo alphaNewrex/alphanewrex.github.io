@@ -1,8 +1,10 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
-import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import SideBar from "../components/SideBar.astro";
+import NavMenu from "../components/NavMenu.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import GlobeWidget from "../components/globe-widget/GlobeWidget.astro";
+import DotField from "../components/DotField.astro";
 
 import { SITE_TITLE, SITE_DESCRIPTION } from "../config";
 
@@ -15,18 +17,13 @@ const { image, title = SITE_TITLE, description = SITE_DESCRIPTION, includeSideba
     <BaseHead title={title} description={description} image={image} />
   </head>
   <body>
-    <div class="bg-base-100 drawer lg:drawer-open">
-      <input id="my-drawer" type="checkbox" class="drawer-toggle" />
-      <div class="drawer-content bg-base-100">
-        <Header title={SITE_TITLE} />
-        <div class="md:flex md:justify-center">
-          <main class="p-6 pt-10 lg:max-w-[900px] max-w-[100vw]">
-            <slot />
-          </main>
-        </div>
-        <Footer />
-      </div>
-      {includeSidebar && <SideBar sideBarActiveItemID={sideBarActiveItemID} />}
-    </div>
+    <DotField />
+    {includeSidebar && <NavMenu activeId={sideBarActiveItemID} />}
+    <ThemeToggle />
+    <main class="mx-auto w-full max-w-[900px] px-6 pt-24 lg:pt-16 pb-6">
+      <slot />
+    </main>
+    <Footer />
+    <GlobeWidget />
   </body>
 </html>

@@ -1,0 +1,463 @@
+---
+import { CAT, CAT_HEAD, type Dot } from './cat';
+
+const PITCH = 6;
+const R = 2.3;
+const at = ([c, r]: Dot) => ({ cx: c * PITCH + PITCH / 2, cy: r * PITCH + PITCH / 2 });
+const pivot = at(CAT.tailPivot);
+// Paw pivots at the shoulder (its last dot) so the swipe swings from the body.
+const shoulder = at(CAT.paw[CAT.paw.length - 1]);
+const METER_DOTS = 18;
+---
+
+<div class="gw" data-gw>
+	<section class="gw-panel" id="gw-panel" role="dialog" aria-labelledby="gw-title" aria-hidden="true" inert>
+		<header class="gw-head">
+			<div>
+				<p class="gw-eyebrow">Visitor log</p>
+				<h2 class="gw-title" id="gw-title">You are here <span>(roughly)</span></h2>
+			</div>
+			<button class="gw-close" type="button" aria-label="Close visitor globe">
+				<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" /></svg>
+			</button>
+		</header>
+
+		<div class="gw-body">
+			<div class="gw-stage">
+				<canvas class="gw-globe" aria-hidden="true"></canvas>
+				<button class="gw-cat" type="button" aria-label="Boop the cat to spin the globe">
+					<svg viewBox={`${-3 * PITCH} 0 ${(CAT.cols + 3) * PITCH} ${CAT.rows * PITCH}`} aria-hidden="true">
+						<g class="gw-whiskers">{CAT.whiskers.map((d) => <circle {...at(d)} r={R * 0.6} />)}</g>
+						<g class="gw-fur">{CAT.fur.map((d) => <circle {...at(d)} r={R} />)}</g>
+						<g class="gw-tail" style={`transform-origin: ${pivot.cx}px ${pivot.cy}px`}>
+							{CAT.tail.map((d) => <circle {...at(d)} r={R} />)}
+						</g>
+						<g class="gw-paw" style={`transform-origin: ${shoulder.cx}px ${shoulder.cy}px`}>
+							{CAT.paw.map((d) => <circle {...at(d)} r={R} />)}
+						</g>
+						<g class="gw-eyes">{CAT.eyes.map((d) => <circle {...at(d)} r={R} />)}</g>
+						<g class="gw-eyes-dizzy">{CAT.dizzyEyes.map((d) => <circle {...at(d)} r={R} />)}</g>
+						<g class="gw-nose">{CAT.nose.map((d) => <circle {...at(d)} r={R} />)}</g>
+					</svg>
+				</button>
+			</div>
+
+			<div class="gw-side">
+				<p class="gw-lede">
+					Each orange dot is a place someone has opened this site from. The cat thinks the planet is a toy, so give it a
+					boop.
+				</p>
+
+				<dl class="gw-stats">
+					<div><dt>Visits</dt><dd data-stat="visits">–</dd></div>
+					<div><dt>Countries</dt><dd data-stat="countries">–</dd></div>
+					<div><dt>Cities</dt><dd data-stat="cities">–</dd></div>
+				</dl>
+
+				<div class="gw-meter" aria-hidden="true">
+					<div class="gw-meter-label">
+						<span>Spin</span>
+						<span class="gw-combo">×1</span>
+					</div>
+					<div class="gw-meter-dots">
+						{Array.from({ length: METER_DOTS }, () => <i />)}
+					</div>
+					<!-- Easter egg: stays invisible until the cat's first boop. -->
+					<p class="gw-bps">
+						<span><b data-bps>0.0</b> boops/s</span>
+						<span>best <b data-bps-best>0.0</b></span>
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<button class="gw-launcher" type="button" aria-expanded="false" aria-controls="gw-panel" aria-label="Show where visitors come from">
+		<svg viewBox={`0 0 ${CAT_HEAD.cols * PITCH} ${CAT_HEAD.rows * PITCH}`} aria-hidden="true">
+			<g class="gw-fur">{CAT_HEAD.fur.map((d) => <circle {...at(d)} r={R} />)}</g>
+			<g class="gw-eyes">{CAT_HEAD.eyes.map((d) => <circle {...at(d)} r={R} />)}</g>
+			<g class="gw-nose">{CAT_HEAD.nose.map((d) => <circle {...at(d)} r={R} />)}</g>
+		</svg>
+	</button>
+</div>
+
+<style>
+	.gw {
+		/* Pinned to both sides so the panel's width excludes the scrollbar and the
+		   left and right gaps stay equal (100vw would include the scrollbar). */
+		position: fixed;
+		left: 20px;
+		right: 20px;
+		bottom: 20px;
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 12px;
+		pointer-events: none;
+		color: var(--ds-ink);
+	}
+	.gw > * {
+		pointer-events: auto;
+	}
+
+	/* ---------- launcher ---------- */
+	.gw-launcher {
+		width: 56px;
+		height: 56px;
+		border-radius: 999px;
+		display: grid;
+		place-items: center;
+		background: var(--ds-surface);
+		border: 1px solid var(--ds-line);
+		box-shadow: var(--ds-shadow-sm);
+		cursor: pointer;
+		transition: transform 220ms var(--ds-ease-spring), box-shadow 200ms ease;
+	}
+	.gw-launcher:hover {
+		transform: translateY(-2px) scale(1.06);
+		box-shadow: var(--ds-shadow-md);
+	}
+	.gw-launcher:active {
+		transform: scale(0.94);
+	}
+	.gw-launcher svg {
+		width: 32px;
+	}
+	.gw.is-open .gw-launcher {
+		transform: scale(0.9);
+	}
+	.gw button:focus-visible {
+		outline: 2px solid var(--ds-accent);
+		outline-offset: 3px;
+	}
+
+	/* ---------- panel open/close ---------- */
+	.gw-panel {
+		width: min(760px, 100%);
+		max-height: calc(100dvh - 108px);
+		overflow-y: auto;
+		padding: 22px 24px 20px;
+		border-radius: 22px;
+		background: var(--ds-surface);
+		border: 1px solid var(--ds-line);
+		box-shadow: var(--ds-shadow-lg);
+		transform-origin: bottom right;
+		transform: translateY(16px) scale(0.5);
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+			opacity 160ms ease 60ms,
+			visibility 0s linear 300ms;
+	}
+	.gw.is-open .gw-panel {
+		transform: none;
+		opacity: 1;
+		visibility: visible;
+		transition:
+			transform 460ms var(--ds-ease-spring),
+			opacity 200ms ease,
+			visibility 0s;
+	}
+	/* Content settles in just after the panel lands. */
+	.gw-body > * {
+		opacity: 0;
+		transform: translateY(8px);
+		transition: opacity 200ms ease, transform 200ms ease;
+	}
+	.gw.is-open .gw-body > * {
+		opacity: 1;
+		transform: none;
+		transition: opacity 360ms ease 140ms, transform 460ms var(--ds-ease-spring) 140ms;
+	}
+	.gw.is-open .gw-body > .gw-side {
+		transition-delay: 220ms;
+	}
+
+	/* ---------- header ---------- */
+	.gw-head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.gw-eyebrow {
+		margin: 0 0 4px;
+		font: 600 11px/1 var(--ds-font-mono);
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ds-accent);
+	}
+	.gw-title {
+		margin: 0;
+		font-size: 26px;
+		line-height: 1.15;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+	}
+	.gw-title span {
+		font-weight: 400;
+		color: var(--ds-ink-muted);
+	}
+	.gw-close {
+		flex: none;
+		width: 34px;
+		height: 34px;
+		display: grid;
+		place-items: center;
+		border-radius: 999px;
+		border: 1px solid var(--ds-line);
+		background: transparent;
+		cursor: pointer;
+		transition: background 150ms ease, transform 200ms var(--ds-ease-spring);
+	}
+	.gw-close:hover {
+		background: color-mix(in oklab, var(--ds-ink) 6%, transparent);
+		transform: rotate(90deg);
+	}
+	.gw-close svg {
+		width: 14px;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+	}
+
+	/* ---------- body ---------- */
+	.gw-body {
+		display: grid;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+		gap: 28px;
+		align-items: center;
+		margin-top: 8px;
+	}
+
+	.gw-stage {
+		position: relative;
+		aspect-ratio: 1.22;
+	}
+	.gw-globe {
+		position: absolute;
+		left: 0;
+		top: 0;
+		height: 100%;
+		aspect-ratio: 1;
+		opacity: 0;
+		transform: scale(0.94);
+		transition: opacity 700ms ease, transform 900ms var(--ds-ease-spring);
+	}
+	.gw-globe.is-ready {
+		opacity: 1;
+		transform: none;
+	}
+
+	.gw-cat {
+		position: absolute;
+		right: -1%;
+		bottom: 0;
+		width: 47%;
+		padding: 0;
+		background: none;
+		border: 0;
+		border-radius: 12px;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+		transition: transform 180ms var(--ds-ease-spring);
+	}
+	.gw-cat:hover {
+		transform: translateY(-2px);
+	}
+	.gw-cat:active {
+		transform: translateY(1px) scale(0.98);
+	}
+	.gw-cat svg {
+		display: block;
+		width: 100%;
+		overflow: visible;
+	}
+
+	.gw-fur circle,
+	.gw-tail circle,
+	.gw-paw circle {
+		fill: var(--ds-ink);
+	}
+	.gw-whiskers circle {
+		fill: var(--ds-ink-muted);
+	}
+	.gw-eyes circle,
+	.gw-eyes-dizzy circle {
+		fill: var(--ds-surface);
+	}
+	.gw-nose circle {
+		fill: var(--ds-accent);
+	}
+	.gw-tail {
+		will-change: transform;
+	}
+	.gw-cat.is-swiping .gw-paw {
+		animation: gw-swipe 220ms cubic-bezier(0.3, 0, 0.2, 1);
+	}
+	.gw-eyes-dizzy {
+		opacity: 0;
+	}
+	.gw-cat.is-dizzy .gw-eyes,
+	.gw-cat.is-blinking .gw-eyes {
+		opacity: 0;
+	}
+	.gw-cat.is-dizzy .gw-eyes-dizzy {
+		opacity: 1;
+	}
+
+	/* ---------- side column ---------- */
+	.gw-lede {
+		margin: 0;
+		font-size: 15px;
+		line-height: 1.55;
+		color: var(--ds-ink-muted);
+	}
+	.gw-stats {
+		display: grid;
+		grid-template-columns: repeat(3, auto);
+		justify-content: start;
+		gap: 22px;
+		margin: 20px 0 0;
+	}
+	.gw-stats dt {
+		font: 500 11px/1 var(--ds-font-mono);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ds-ink-muted);
+	}
+	.gw-stats dd {
+		margin: 8px 0 0;
+		font: 700 34px/1 var(--ds-font-mono);
+		letter-spacing: -0.03em;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.gw-meter {
+		margin-top: 22px;
+	}
+	.gw-meter-label {
+		display: flex;
+		justify-content: space-between;
+		font: 500 11px/1 var(--ds-font-mono);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--ds-ink-muted);
+	}
+	.gw-combo {
+		color: var(--ds-accent);
+		transition: transform 160ms var(--ds-ease-spring);
+	}
+	.gw-combo.is-bumped {
+		transform: scale(1.35);
+	}
+	.gw-bps {
+		display: flex;
+		justify-content: space-between;
+		margin: 10px 0 0;
+		font: 500 11px/1 var(--ds-font-mono);
+		letter-spacing: 0.06em;
+		color: var(--ds-ink-muted);
+		opacity: 0;
+		transform: translateY(-4px);
+		transition:
+			opacity 300ms ease,
+			transform 400ms var(--ds-ease-spring);
+	}
+	.gw-bps.is-found {
+		opacity: 1;
+		transform: none;
+	}
+	.gw-bps b {
+		font-weight: 700;
+		color: var(--ds-ink);
+		font-variant-numeric: tabular-nums;
+	}
+	.gw-bps.is-record [data-bps-best] {
+		color: var(--ds-accent);
+	}
+	.gw-meter-dots {
+		display: flex;
+		gap: 5px;
+		margin-top: 9px;
+	}
+	.gw-meter-dots i {
+		width: 8px;
+		height: 8px;
+		border-radius: 999px;
+		background: var(--ds-line);
+		transition: background 120ms ease, transform 160ms var(--ds-ease-spring);
+	}
+	.gw-meter-dots i.is-on {
+		background: var(--ds-ink);
+	}
+	.gw-meter-dots i.is-hot {
+		background: var(--ds-accent);
+		transform: scale(1.2);
+	}
+
+	@keyframes gw-swipe {
+		35% {
+			transform: rotate(-24deg) translate(-3px, 2px);
+		}
+	}
+
+	/* ---------- small screens ---------- */
+	@media (max-width: 680px) {
+		.gw {
+			left: 16px;
+			right: 16px;
+			bottom: 16px;
+		}
+		.gw-panel {
+			/* Stop below the menu button (14px + 56px + 14px) instead of running under it. */
+			max-height: calc(100dvh - 16px - 56px - 12px - 84px);
+			padding: 18px 16px 16px;
+		}
+		.gw-title {
+			font-size: 22px;
+		}
+		.gw-body {
+			grid-template-columns: 1fr;
+			gap: 14px;
+		}
+		.gw-stage {
+			max-width: 360px;
+			width: 100%;
+			margin: 0 auto;
+		}
+		.gw-lede {
+			display: none;
+		}
+		.gw-stats {
+			margin-top: 0;
+			grid-template-columns: repeat(3, 1fr);
+		}
+		.gw-stats dd {
+			font-size: 26px;
+		}
+		.gw-meter-dots {
+			justify-content: space-between;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.gw-panel,
+		.gw.is-open .gw-panel,
+		.gw-body > *,
+		.gw.is-open .gw-body > * {
+			transform: none;
+			transition: opacity 150ms ease, visibility 0s;
+		}
+		.gw-cat.is-swiping .gw-paw {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	import { initGlobeWidget } from './globe-widget';
+	initGlobeWidget();
+</script>

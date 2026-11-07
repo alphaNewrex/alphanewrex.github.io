@@ -1,0 +1,166 @@
+---
+// Interactive layer for the page's dot grid. The static grid itself is a CSS
+// background on :root (src/styles/global.css); this canvas only draws the dots
+// that light up around the cursor and the ripples sent out by clicks. Both use
+// the same --dot-pitch, so the highlights land exactly on the CSS dots.
+---
+
+<canvas class="dot-field" aria-hidden="true"></canvas>
+
+<style>
+	.dot-field {
+		position: fixed;
+		inset: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
+		pointer-events: none;
+	}
+</style>
+
+<script>
+	const HALO_RADIUS = 150;
+	const HALO_GROWTH = 2.4; // extra dot radius at the cursor, in CSS px
+	const FOLLOW_SECONDS = 0.09; // how quickly the halo catches up to the cursor
+	const FADE_SECONDS = 0.25;
+	const RIPPLE_SPEED = 750; // px per second
+	const RIPPLE_WIDTH = 70;
+	const RIPPLE_LIFE = 1.3; // seconds
+	const ACCENT = '255, 106, 61';
+
+	type Ripple = { x: number; y: number; born: number };
+
+	const canvas = document.querySelector<HTMLCanvasElement>('.dot-field');
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (canvas && !reducedMotion) {
+		const ctx = canvas.getContext('2d')!;
+		const pitch = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dot-pitch')) || 24;
+		const baseRadius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dot-size')) || 1;
+
+		let width = 0;
+		let height = 0;
+		let dpr = 1;
+		let target = { x: -9999, y: -9999 };
+		let halo = { x: -9999, y: -9999 };
+		let haloStrength = 0;
+		let haloTarget = 0;
+		let ripples: Ripple[] = [];
+		let frame = 0;
+		let lastTime = 0;
+
+		const resize = () => {
+			dpr = Math.min(window.devicePixelRatio || 1, 2);
+			width = window.innerWidth;
+			height = window.innerHeight;
+			canvas.width = Math.round(width * dpr);
+			canvas.height = Math.round(height * dpr);
+			ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+			wake();
+		};
+
+		const wake = () => {
+			if (!frame) {
+				lastTime = 0;
+				frame = requestAnimationFrame(draw);
+			}
+		};
+
+		const smoothstep = (t: number) => t * t * (3 - 2 * t);
+
+		function draw(time: number) {
+			const dt = lastTime ? Math.min((time - lastTime) / 1000, 0.05) : 0.016;
+			lastTime = time;
+			const now = time / 1000;
+
+			// Ease the halo toward the cursor and its strength toward on/off.
+			const follow = 1 - Math.exp(-dt / FOLLOW_SECONDS);
+			if (haloStrength < 0.01 && haloTarget > 0) {
+				halo = { ...target }; // appear where the cursor enters, don't slide in
+			} else {
+				halo.x += (target.x - halo.x) * follow;
+				halo.y += (target.y - halo.y) * follow;
+			}
+			haloStrength += (haloTarget - haloStrength) * (1 - Math.exp(-dt / FADE_SECONDS));
+			ripples = ripples.filter((r) => now - r.born < RIPPLE_LIFE);
+
+			ctx.clearRect(0, 0, width, height);
+
+			// Only scan dots that something can actually light up.
+			let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+			const include = (x: number, y: number, r: number) => {
+				minX = Math.min(minX, x - r);
+				minY = Math.min(minY, y - r);
+				maxX = Math.max(maxX, x + r);
+				maxY = Math.max(maxY, y + r);
+			};
+			if (haloStrength > 0.01) include(halo.x, halo.y, HALO_RADIUS);
+			for (const r of ripples) include(r.x, r.y, (now - r.born) * RIPPLE_SPEED + RIPPLE_WIDTH);
+
+			if (minX < maxX) {
+				const c0 = Math.max(0, Math.floor(minX / pitch));
+				const c1 = Math.min(Math.ceil(width / pitch), Math.ceil(maxX / pitch));
+				const r0 = Math.max(0, Math.floor(minY / pitch));
+				const r1 = Math.min(Math.ceil(height / pitch), Math.ceil(maxY / pitch));
+
+				for (let row = r0; row <= r1; row++) {
+					const y = row * pitch + pitch / 2;
+					for (let col = c0; col <= c1; col++) {
+						const x = col * pitch + pitch / 2;
+						let glow = 0;
+
+						if (haloStrength > 0.01) {
+							const d = Math.hypot(x - halo.x, y - halo.y);
+							if (d < HALO_RADIUS) glow = smoothstep(1 - d / HALO_RADIUS) * haloStrength;
+						}
+						for (const r of ripples) {
+							const age = now - r.born;
+							const band = 1 - Math.abs(Math.hypot(x - r.x, y - r.y) - age * RIPPLE_SPEED) / RIPPLE_WIDTH;
+							if (band > 0) glow = Math.max(glow, smoothstep(band) * (1 - age / RIPPLE_LIFE) * 0.85);
+						}
+
+						if (glow > 0.02) {
+							ctx.beginPath();
+							ctx.arc(x, y, baseRadius + HALO_GROWTH * glow, 0, Math.PI * 2);
+							ctx.fillStyle = `rgba(${ACCENT}, ${Math.min(1, glow * 1.1).toFixed(3)})`;
+							ctx.fill();
+						}
+					}
+				}
+			}
+
+			const settled =
+				ripples.length === 0 &&
+				Math.abs(haloTarget - haloStrength) < 0.005 &&
+				Math.abs(target.x - halo.x) < 0.2 &&
+				Math.abs(target.y - halo.y) < 0.2;
+			frame = settled ? 0 : requestAnimationFrame(draw);
+		}
+
+		window.addEventListener(
+			'pointermove',
+			(e) => {
+				if (e.pointerType !== 'mouse') return;
+				target = { x: e.clientX, y: e.clientY };
+				haloTarget = 1;
+				wake();
+			},
+			{ passive: true },
+		);
+		document.documentElement.addEventListener('pointerleave', () => {
+			haloTarget = 0;
+			wake();
+		});
+		window.addEventListener(
+			'pointerdown',
+			(e) => {
+				ripples.push({ x: e.clientX, y: e.clientY, born: performance.now() / 1000 });
+				if (ripples.length > 4) ripples.shift();
+				wake();
+			},
+			{ passive: true },
+		);
+		window.addEventListener('resize', resize, { passive: true });
+		resize();
+	}
+</script>

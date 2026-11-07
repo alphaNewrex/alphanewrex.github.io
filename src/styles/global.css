@@ -1,9 +1,285 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
-	themes: all;
+	themes: lofi --default, black;
 }
 
-.time-line-container > div:last-child .education__time > .education__line {
-	display: none;
+/* =============================================================================
+   Design system tokens. Documented in DESIGN.md; components use these, never raw
+   colours. `lofi` is the light theme and `black` the dark one (data-theme on <html>).
+   Rules here are unlayered so they win over daisyUI's layered theme variables.
+   ========================================================================== */
+
+:root {
+	/* Type */
+	--ds-font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+
+	/* Shape */
+	--ds-radius-sm: 12px;
+	--ds-radius-md: 16px;
+	--ds-radius-lg: 20px;
+	--ds-radius-pill: 999px;
+
+	/* Motion */
+	--ds-ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+	--ds-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--ds-dur-fast: 160ms;
+	--ds-dur: 240ms;
+	--ds-dur-slow: 420ms;
+
+	/* Dot grid */
+	--dot-pitch: 24px;
+	--dot-size: 1px;
+}
+
+:root,
+[data-theme='lofi'] {
+	--ds-page: #ffffff;
+	--ds-surface: #ffffff;
+	--ds-surface-sunken: #f4f4f5;
+	--ds-ink: #0b0b0c;
+	--ds-ink-muted: #5b5b63;
+	--ds-ink-faint: #8e8e96;
+	--ds-on-ink: #ffffff;
+	--ds-line: rgb(11 11 12 / 0.12);
+	--ds-line-strong: rgb(11 11 12 / 0.26);
+	--ds-dot: rgb(11 11 12 / 0.17);
+	--ds-accent: #ff6a3d;
+	--ds-accent-soft: rgb(255 106 61 / 0.14);
+	--ds-shadow-sm: 0 4px 14px rgb(0 0 0 / 0.08);
+	--ds-shadow-md: 0 10px 28px rgb(0 0 0 / 0.12);
+	--ds-shadow-lg: 0 24px 60px rgb(0 0 0 / 0.18);
+	color-scheme: light;
+}
+
+[data-theme='black'] {
+	--ds-page: #000000;
+	--ds-surface: #0e0e10;
+	--ds-surface-sunken: #18181b;
+	--ds-ink: #f4f4f5;
+	--ds-ink-muted: #a1a1aa;
+	--ds-ink-faint: #71717a;
+	--ds-on-ink: #0b0b0c;
+	--ds-line: rgb(255 255 255 / 0.12);
+	--ds-line-strong: rgb(255 255 255 / 0.26);
+	--ds-dot: rgb(255 255 255 / 0.16);
+	--ds-accent: #ff7a50;
+	--ds-accent-soft: rgb(255 122 80 / 0.16);
+	--ds-shadow-sm: 0 4px 14px rgb(0 0 0 / 0.5);
+	--ds-shadow-md: 0 10px 28px rgb(0 0 0 / 0.6);
+	--ds-shadow-lg: 0 24px 60px rgb(0 0 0 / 0.7);
+	color-scheme: dark;
+}
+
+/* daisyUI and Tailwind utilities (bg-base-100, text-base-content, prose…) read
+   these, so point them at the design system instead of daisyUI's own palette. */
+:root,
+[data-theme] {
+	--color-base-100: var(--ds-surface);
+	--color-base-200: var(--ds-surface-sunken);
+	--color-base-300: var(--ds-line-strong);
+	--color-base-content: var(--ds-ink);
+	--root-bg: var(--ds-page);
+}
+
+/* =============================================================================
+   Page background: a fixed dot grid. DotField's canvas highlights line up with
+   these dots, so keep --dot-pitch/--dot-size in sync with DotField.astro.
+   ========================================================================== */
+:root {
+	background-image: radial-gradient(
+		circle at center,
+		var(--ds-dot) var(--dot-size),
+		transparent calc(var(--dot-size) + 0.6px)
+	);
+	background-size: var(--dot-pitch) var(--dot-pitch);
+	background-position: 0 0;
+	background-attachment: fixed;
+}
+
+/* =============================================================================
+   Shared components (see DESIGN.md). Boxes use the Panel.astro component.
+   ========================================================================== */
+
+.ds-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	height: 40px;
+	padding: 0 18px;
+	border-radius: var(--ds-radius-pill);
+	border: 1px solid transparent;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		transform var(--ds-dur) var(--ds-ease-spring),
+		box-shadow var(--ds-dur) ease,
+		background-color var(--ds-dur-fast) ease,
+		border-color var(--ds-dur-fast) ease,
+		color var(--ds-dur-fast) ease;
+}
+.ds-btn:hover {
+	transform: translateY(-1px);
+	box-shadow: var(--ds-shadow-sm);
+}
+.ds-btn:active {
+	transform: translateY(0) scale(0.97);
+	box-shadow: none;
+}
+.ds-btn svg {
+	width: 16px;
+	height: 16px;
+	flex: none;
+}
+.ds-btn--sm {
+	height: 34px;
+	padding: 0 14px;
+	font-size: 13px;
+}
+/* Filled with ink: the one main action in a group. */
+.ds-btn--primary {
+	background: var(--ds-ink);
+	border-color: var(--ds-ink);
+	color: var(--ds-on-ink);
+}
+/* Outlined: everything else. */
+.ds-btn--secondary {
+	background: var(--ds-surface);
+	border-color: var(--ds-line-strong);
+	color: var(--ds-ink);
+}
+.ds-btn--secondary:hover {
+	border-color: var(--ds-ink);
+}
+/* For use on an ink-filled surface (Panel tone="ink"). */
+.ds-btn--inverse {
+	background: var(--ds-on-ink);
+	border-color: var(--ds-on-ink);
+	color: var(--ds-ink);
+}
+.ds-btn--inverse-outline {
+	background: transparent;
+	border-color: color-mix(in oklab, var(--ds-on-ink) 45%, transparent);
+	color: var(--ds-on-ink);
+}
+.ds-btn--inverse-outline:hover {
+	border-color: var(--ds-on-ink);
+}
+
+.ds-chip {
+	display: inline-flex;
+	align-items: center;
+	height: 26px;
+	padding: 0 11px;
+	border-radius: var(--ds-radius-pill);
+	border: 1px solid var(--ds-line-strong);
+	background: transparent;
+	color: var(--ds-ink-muted);
+	font-size: 12.5px;
+	font-weight: 500;
+	line-height: 1;
+	white-space: nowrap;
+	text-decoration: none;
+}
+a.ds-chip {
+	transition:
+		color var(--ds-dur-fast) ease,
+		border-color var(--ds-dur-fast) ease;
+}
+a.ds-chip:hover {
+	color: var(--ds-ink);
+	border-color: var(--ds-ink);
+}
+/* A label that should stand out (e.g. a post's category). */
+.ds-chip--solid {
+	background: var(--ds-ink);
+	border-color: var(--ds-ink);
+	color: var(--ds-on-ink);
+	font-weight: 600;
+}
+.ds-chip--accent {
+	background: var(--ds-accent-soft);
+	border-color: transparent;
+	color: var(--ds-ink);
+}
+
+/* Round floating control: menu, theme switch, visitor globe. */
+.ds-icon-btn {
+	width: 56px;
+	height: 56px;
+	display: grid;
+	place-items: center;
+	border-radius: var(--ds-radius-pill);
+	background: var(--ds-surface);
+	border: 1px solid var(--ds-line);
+	box-shadow: var(--ds-shadow-sm);
+	color: var(--ds-ink);
+	cursor: pointer;
+	transition:
+		transform var(--ds-dur) var(--ds-ease-spring),
+		box-shadow var(--ds-dur) ease;
+}
+.ds-icon-btn:hover {
+	transform: translateY(-2px) scale(1.06);
+	box-shadow: var(--ds-shadow-md);
+}
+.ds-icon-btn:active {
+	transform: scale(0.94);
+}
+
+.ds-link {
+	color: var(--ds-ink);
+	text-decoration: underline;
+	text-decoration-color: var(--ds-line-strong);
+	text-underline-offset: 3px;
+	transition: text-decoration-color var(--ds-dur-fast) ease;
+}
+.ds-link:hover {
+	text-decoration-color: var(--ds-accent);
+}
+
+/* Secondary text. Use this, not opacity, so controls inside stay full strength. */
+.ds-muted {
+	color: var(--ds-ink-muted);
+}
+
+:where(.ds-btn, .ds-chip, .ds-icon-btn, .ds-link):focus-visible {
+	outline: 2px solid var(--ds-accent);
+	outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ds-btn,
+	.ds-icon-btn {
+		transition: none;
+	}
+	.ds-btn:hover,
+	.ds-icon-btn:hover {
+		transform: none;
+	}
+}
+
+/* Blog posts: prose colours come from the design system. */
+.prose {
+	--tw-prose-body: color-mix(in oklab, var(--ds-ink) 88%, transparent);
+	--tw-prose-headings: var(--ds-ink);
+	--tw-prose-lead: var(--ds-ink-muted);
+	--tw-prose-links: var(--ds-ink);
+	--tw-prose-bold: var(--ds-ink);
+	--tw-prose-counters: var(--ds-ink-muted);
+	--tw-prose-bullets: var(--ds-ink-faint);
+	--tw-prose-hr: var(--ds-line);
+	--tw-prose-quotes: var(--ds-ink);
+	--tw-prose-quote-borders: var(--ds-line-strong);
+	--tw-prose-captions: var(--ds-ink-muted);
+	--tw-prose-code: var(--ds-ink);
+	--tw-prose-pre-code: var(--ds-ink);
+	--tw-prose-pre-bg: var(--ds-surface-sunken);
+	--tw-prose-th-borders: var(--ds-line-strong);
+	--tw-prose-td-borders: var(--ds-line);
 }

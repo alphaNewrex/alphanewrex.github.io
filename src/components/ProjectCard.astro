@@ -10,31 +10,31 @@ interface Props extends Project {
 const { title, need, built, tech, github, note, image } = Astro.props
 ---
 
-<article class='rounded-lg bg-base-100 border border-base-300 p-5 md:p-6'>
-	<div class='flex flex-col md:flex-row gap-5'>
+<article class='rounded-[20px] bg-base-100 border border-base-content/20 p-5 md:p-8 transition duration-300 hover:-translate-y-0.5 hover:shadow-lg'>
+	<div class='flex flex-col gap-6'>
 		{
 			image && (
 				<Image
 					src={image}
-					widths={[320, 640]}
-					sizes='(max-width: 768px) 100vw, 320px'
+					widths={[480, 960, 1440]}
+					sizes='(max-width: 900px) 100vw, 840px'
 					format='webp'
 					alt={`${title} screenshot`}
-					class='w-full md:w-[20rem] h-auto rounded-lg border border-base-300 self-start'
+					class='w-full h-auto rounded-xl border border-base-300'
 				/>
 			)
 		}
 		<div class='grow'>
 			<div class='flex items-center flex-wrap gap-2'>
 				<h2 class='text-2xl font-bold'>{title}</h2>
-				{note && <span class='badge badge-ghost'>{note}</span>}
+				{note && <span class='ds-chip ds-chip--accent'>{note}</span>}
 			</div>
 
-			<p class='mt-3 opacity-80 italic'>{need}</p>
+			<p class='mt-3 ds-muted italic'>{need}</p>
 			<p class='mt-3'>{built}</p>
 
 			<ul class='flex flex-wrap gap-2 mt-4 p-0'>
-				{tech.map((t) => <li class='badge badge-outline'>{t}</li>)}
+				{tech.map((t) => <li class='ds-chip'>{t}</li>)}
 			</ul>
 
 			{
@@ -43,7 +43,7 @@ const { title, need, built, tech, github, note, image } = Astro.props
 						href={github}
 						target='_blank'
 						rel='noopener noreferrer'
-						class='btn btn-outline btn-sm mt-4'
+						class='ds-btn ds-btn--secondary ds-btn--sm mt-5'
 					>
 						<svg
 							class='w-4 h-4 fill-current'

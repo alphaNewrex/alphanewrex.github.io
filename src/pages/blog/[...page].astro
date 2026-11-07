@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import PageIntro from '../../components/PageIntro.astro'
+import Panel from '../../components/Panel.astro'
 import HorizontalCard from '../../components/HorizontalCard.astro'
 import { getCollection } from 'astro:content'
 
@@ -13,20 +15,19 @@ const { page } = Astro.props
 ---
 
 <BaseLayout title='Blog' sideBarActiveItemID='blog'>
-	<div class='mb-5'>
-		<div class='text-3xl w-full font-bold'>Blog</div>
-	</div>
+	<PageIntro title='Blog' />
 
 	{
 		page.data.length === 0 ? (
-			<div class='bg-base-200 border-l-4 border-secondary w-full p-4 min-w-full'>
+			<Panel>
 				<p class='font-bold'>Sorry!</p>
-				<p>There are no blog posts to show at the moment. Check back later!</p>
-			</div>
+				<p class='ds-muted'>There are no blog posts to show at the moment. Check back later!</p>
+			</Panel>
 		) : (
-			<ul>
+			<ul class='grid gap-5 mt-5'>
 				{page.data.map((post) => (
 					<>
+						<li>
 						<HorizontalCard
 							title={post.data.title}
 							img={post.data.heroImage}
@@ -36,7 +37,7 @@ const { page } = Astro.props
 							badge={post.data.badge}
 							tags={post.data.tags}
 						/>
-						<div class='divider my-0' />
+						</li>
 					</>
 				))}
 			</ul>
@@ -46,10 +47,10 @@ const { page } = Astro.props
 	<div class='flex justify-between'>
 		{
 			page.url.prev ? (
-				<a href={page.url.prev} class='btn btn-ghost my-10 mx-5'>
+				<a href={page.url.prev} class='ds-btn ds-btn--secondary my-8'>
 					{' '}
 					<svg
-						class='h-6 w-6 fill-current md:h-8 md:w-8'
+						class='fill-current'
 						xmlns='http://www.w3.org/2000/svg'
 						width='24'
 						height='24'
@@ -65,10 +66,10 @@ const { page } = Astro.props
 		}
 		{
 			page.url.next ? (
-				<a href={page.url.next} class='btn btn-ghost my-10 mx-5'>
+				<a href={page.url.next} class='ds-btn ds-btn--secondary my-8'>
 					Older Posts{' '}
 					<svg
-						class='h-6 w-6 fill-current md:h-8 md:w-8'
+						class='fill-current'
 						xmlns='http://www.w3.org/2000/svg'
 						width='24'
 						height='24'

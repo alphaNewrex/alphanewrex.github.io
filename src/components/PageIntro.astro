@@ -1,0 +1,20 @@
+---
+// Title box at the top of a section page (CV, Projects, Photos, Blog).
+import Panel from './Panel.astro';
+
+interface Props {
+	title: string;
+}
+const { title } = Astro.props;
+---
+
+<Panel class="page-intro">
+	<h1 class="text-4xl md:text-5xl font-bold tracking-tight">{title}</h1>
+	{
+		Astro.slots.has('default') && (
+			<div class="mt-4 text-lg leading-relaxed ds-muted">
+				<slot />
+			</div>
+		)
+	}
+</Panel>

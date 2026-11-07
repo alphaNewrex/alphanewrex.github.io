@@ -1,0 +1,49 @@
+---
+// A bordered box that gives text a solid surface above the dot-grid background.
+// `title` renders a plain section heading; `tone='ink'` inverts the colours for a call-to-action.
+interface Props {
+	title?: string;
+	tone?: 'paper' | 'ink';
+	as?: 'section' | 'article' | 'div';
+	class?: string;
+}
+const { title, tone = 'paper', as: Tag = 'section', class: className } = Astro.props;
+---
+
+<Tag class:list={['panel', `panel-${tone}`, className]}>
+	{title && <h2 class="panel-title">{title}</h2>}
+	<slot />
+</Tag>
+
+<style>
+	.panel {
+		position: relative;
+		padding: 28px 32px 30px;
+		border-radius: var(--ds-radius-lg);
+		background: var(--ds-surface);
+		color: var(--ds-ink);
+		border: 1px solid var(--ds-line-strong);
+	}
+	.panel + :global(.panel) {
+		margin-top: 20px;
+	}
+	.panel-ink {
+		background: var(--ds-ink);
+		color: var(--ds-on-ink);
+		border-color: var(--ds-ink);
+	}
+	.panel-title {
+		margin: 0 0 18px;
+		font-size: 1.5rem;
+		line-height: 1.2;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+
+	@media (max-width: 640px) {
+		.panel {
+			padding: 20px 18px 22px;
+			border-radius: var(--ds-radius-md);
+		}
+	}
+</style>

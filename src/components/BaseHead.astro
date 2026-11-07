@@ -14,6 +14,18 @@ const { title, description, image = '/profile_pic.jpeg' } = Astro.props;
 
 <!-- Global Metadata -->
 <meta charset="utf-8" />
+<!-- Apply the saved or system theme before first paint so dark mode never flashes white.
+     Keep the key and theme names in sync with src/lib/theme.ts. -->
+<script is:inline>
+	(() => {
+		let saved = null;
+		try {
+			saved = localStorage.getItem('theme');
+		} catch {}
+		const dark = saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+		document.documentElement.dataset.theme = dark ? 'black' : 'lofi';
+	})();
+</script>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
