@@ -14,8 +14,7 @@
     {
       "binding": "DB",
       "database_name": "visitors",
-      // Replace with the id printed by `pnpm wrangler d1 create visitors`.
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID"
+      "database_id": "2afd4c7d-ad42-402e-8cd8-67cad7ca415f"
     }
   ],
   "observability": { "enabled": true }
