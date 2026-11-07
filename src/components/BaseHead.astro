@@ -33,7 +33,7 @@ const {
 const site = Astro.site!;
 const canonical = new URL(Astro.url.pathname, site).href;
 const isHome = title === SITE_TITLE;
-const fullTitle = isHome ? `${SITE_TITLE} — ${PERSON.jobTitle}` : `${title} | ${SITE_TITLE}`;
+const fullTitle = isHome ? SITE_TITLE : `${title} | ${SITE_TITLE}`;
 const shareImage = new URL(image ?? SITE_IMAGE, site).href;
 const shareImageAlt = imageAlt ?? (image ? title : SITE_IMAGE_ALT);
 const isDefaultImage = !image;
