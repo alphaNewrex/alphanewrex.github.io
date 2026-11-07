@@ -1,15 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "harshgujarathi",
+  // API-only Worker for the visitor globe. The site itself is hosted on GitHub Pages
+  // and calls this Worker cross-origin; see worker/index.ts for the allowed origins.
+  "name": "harshgujarathi-api",
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS",
-    "not_found_handling": "404-page",
-    // Only /api/* invokes the Worker; every other request is served as a free static asset.
-    "run_worker_first": ["/api/*"]
-  },
+  "workers_dev": true,
   "d1_databases": [
     {
       "binding": "DB",

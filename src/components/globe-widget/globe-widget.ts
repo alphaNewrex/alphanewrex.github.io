@@ -1,5 +1,6 @@
 import type { COBEOptions, Globe, Marker } from 'cobe';
 import { currentMode, onModeChange, type Mode } from '../../lib/theme';
+import { VISITOR_API } from '../../config';
 
 // cobe draws in WebGL, so its colours can't come from CSS; one palette per site theme.
 const GLOBE_PALETTE: Record<Mode, Pick<COBEOptions, 'dark' | 'diffuse' | 'mapBrightness' | 'baseColor' | 'glowColor'>> = {
@@ -333,22 +334,23 @@ function countUp(el: HTMLElement, value: number | null, format: Intl.NumberForma
 
 async function loadVisitors(): Promise<VisitorData | null> {
 	try {
-		const res = await fetch('/api/visitors');
+		const res = await fetch(`${VISITOR_API}/api/visitors`);
 		if (!res.ok) throw new Error(String(res.status));
 		return (await res.json()) as VisitorData;
 	} catch {
-		// `astro dev` has no Worker behind it; show sample points so the UI is workable.
+		// API unreachable: show sample points in dev so the UI is workable, nothing in production.
 		return import.meta.env.DEV ? SAMPLE_DATA : null;
 	}
 }
 
 // Count each browser at most once per day. No cookies, nothing identifying is sent.
 function recordVisit() {
-	if (import.meta.env.DEV) return;
+	// Only the live site counts visits (the Worker also rejects other origins).
+	if (!/(^|\.)harshgujarathi\.com$/.test(location.hostname)) return;
 	try {
 		const today = new Date().toISOString().slice(0, 10);
 		if (localStorage.getItem(VISIT_KEY) === today) return;
-		if (navigator.sendBeacon('/api/visit')) localStorage.setItem(VISIT_KEY, today);
+		if (navigator.sendBeacon(`${VISITOR_API}/api/visit`)) localStorage.setItem(VISIT_KEY, today);
 	} catch {
 		// Storage blocked (private mode etc.): skip counting rather than double count.
 	}

@@ -38,12 +38,12 @@
 ## Visitor Globe
 
 - `src/components/globe-widget/` is the bottom-right visitor globe mounted in `BaseLayout.astro`. The dot-matrix cat is defined as ASCII maps in `cat.ts`; spin physics and data loading live in `globe-widget.ts`. cobe and visitor data load only when the panel first opens.
-- `worker/index.ts` is a Cloudflare Worker serving only `/api/visit` (POST, same-origin) and `/api/visitors` (GET, edge-cached 5 min); `wrangler.jsonc` routes `/api/*` to it and serves `dist/` as static assets. Data lives in D1 (`migrations/`), aggregated per country+city with coordinates rounded to 1 decimal. Never store IPs or per-visitor rows.
-- cobe has no dot-size option, so `patches/cobe@2.0.1.patch` (applied by pnpm via `pnpm.patchedDependencies`) raises the land-dot radius in its shader from `8e-3` to `1.1e-2`. Upgrading cobe needs a new patch: `pnpm patch cobe@<version>`, edit that `smoothstep(...)` value, `pnpm patch-commit`. Dot density is `mapSamples` in `globe-widget.ts`.
-- Under `pnpm dev` the API is absent and the widget shows sample points. Test the real API with `pnpm cf:dev` (needs `pnpm wrangler d1 migrations apply visitors --local` once).
+- `worker/index.ts` is an API-only Cloudflare Worker (`harshgujarathi-api`, https://harshgujarathi-api.harsh-portfolio.workers.dev). The site stays on GitHub Pages and calls it cross-origin via `VISITOR_API` in `src/config.ts`. `POST /api/visit` is accepted only from `https://harshgujarathi.com` / `www`; `GET /api/visitors` (edge-cached 5 min) is readable from those origins and localhost. Data lives in D1 `visitors` (`migrations/`), aggregated per country+city with coordinates rounded to 1 decimal. Never store IPs or per-visitor rows.
+- The Worker is NOT deployed by CI: after changing `worker/` or `wrangler.jsonc`, run `pnpm api:deploy` (needs `pnpm wrangler login`). Schema changes: add a file in `migrations/`, then `pnpm wrangler d1 migrations apply visitors --remote`. Local API: `pnpm api:dev` (then `PUBLIC_VISITOR_API=http://localhost:8787 pnpm dev`; apply migrations with `--local` once).
+- The page only sends the visit ping on the real domain; elsewhere (dev, preview) it just reads data, falling back to sample points in `pnpm dev` if the API is unreachable.
 
 ## Deployment
 
-- `.github/workflows/astro.yml` is the only workflow: one job that builds with pnpm on Node 22 and publishes `dist/` to GitHub Pages on pushes to `main`.
+- `.github/workflows/astro.yml` is the only workflow: one job that builds with pnpm on Node 22 and publishes `dist/` to GitHub Pages on pushes to `main`. It does not deploy the visitor-API Worker (see Visitor Globe).
 - `pnpm/action-setup` reads the pnpm version from the `packageManager` field in `package.json`; keep that field in sync with the pnpm you use locally.
 - CI runs `pnpm install --frozen-lockfile`, so commit `pnpm-lock.yaml` alongside any dependency change or the deploy fails.

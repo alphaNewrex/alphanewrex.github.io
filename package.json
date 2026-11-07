@@ -11,8 +11,8 @@
 		"build": "astro build",
 		"preview": "astro preview",
 		"astro": "astro",
-		"cf:dev": "astro build && wrangler dev",
-		"deploy": "astro build && wrangler deploy"
+		"api:dev": "wrangler dev",
+		"api:deploy": "wrangler deploy"
 	},
 	"dependencies": {
 		"@astrojs/mdx": "^5.0.3",
