@@ -11,9 +11,38 @@ dayjs.extend(localizedFormat);
 const displayDate = dayjs(pubDate).format("ll")
 import { Image } from "astro:assets";
 import Panel from "../components/Panel.astro";
+import { PERSON } from "../config";
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const postJsonLd = [
+  {
+    "@type": "BlogPosting",
+    "@id": `${canonical}#post`,
+    headline: title,
+    description,
+    url: canonical,
+    mainEntityOfPage: canonical,
+    datePublished: pubDate?.toISOString(),
+    dateModified: (updatedDate ?? pubDate)?.toISOString(),
+    image: heroImage ? new URL(heroImage, Astro.site).href : undefined,
+    keywords: tags.join(", ") || undefined,
+    inLanguage: "en",
+    author: { "@id": new URL("/#person", Astro.site).href, name: PERSON.name },
+    publisher: { "@id": new URL("/#person", Astro.site).href },
+  },
+];
 ---
 
-<BaseLayout title={title} description={description} image={heroImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={heroImage}
+  type="article"
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  jsonLd={postJsonLd}
+  sideBarActiveItemID="blog"
+>
   <Panel as="article">
     <div class="prose prose-lg max-w-none prose-img:mx-auto">
       {heroImage && <Image width={750} height={422} format="webp" src={heroImage} alt={title} class="w-full mb-6 rounded-xl bg-white" />}

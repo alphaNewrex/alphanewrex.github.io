@@ -14,7 +14,11 @@ export async function getStaticPaths({ paginate }) {
 const { page } = Astro.props
 ---
 
-<BaseLayout title='Blog' sideBarActiveItemID='blog'>
+<BaseLayout
+	title={page.currentPage > 1 ? `Blog (page ${page.currentPage})` : 'Blog'}
+	description='Posts by Harsh Gujarathi on software engineering, .NET, and life outside work.'
+	sideBarActiveItemID='blog'
+>
 	<PageIntro title='Blog' />
 
 	{

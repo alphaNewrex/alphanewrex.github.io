@@ -1,15 +1,73 @@
 ---
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
+// Global CSS enters every page through this component.
 import '../styles/global.css';
+import { PERSON, SITE_DESCRIPTION, SITE_IMAGE, SITE_IMAGE_ALT, SITE_TITLE } from '../config';
 
 export interface Props {
 	title: string;
 	description: string;
+	/** Page-specific share image (path or URL). Defaults to the 1200x630 site card. */
 	image?: string;
+	imageAlt?: string;
+	/** Keep the page out of search results (404, placeholders). */
+	noindex?: boolean;
+	type?: 'website' | 'article' | 'profile';
+	publishedTime?: Date;
+	modifiedTime?: Date;
+	/** Extra JSON-LD objects for this page (merged into the site graph). */
+	jsonLd?: Record<string, unknown>[];
 }
 
-const { title, description, image = '/profile_pic.jpeg' } = Astro.props;
+const {
+	title,
+	description = SITE_DESCRIPTION,
+	image,
+	imageAlt,
+	noindex = false,
+	type = 'website',
+	publishedTime,
+	modifiedTime,
+	jsonLd = [],
+} = Astro.props;
+
+const site = Astro.site!;
+const canonical = new URL(Astro.url.pathname, site).href;
+const isHome = title === SITE_TITLE;
+const fullTitle = isHome ? `${SITE_TITLE} — ${PERSON.jobTitle}` : `${title} | ${SITE_TITLE}`;
+const shareImage = new URL(image ?? SITE_IMAGE, site).href;
+const shareImageAlt = imageAlt ?? (image ? title : SITE_IMAGE_ALT);
+const isDefaultImage = !image;
+
+// Structured data: who the site is about, on every page; pages add their own nodes.
+const personId = new URL('/#person', site).href;
+const websiteId = new URL('/#website', site).href;
+const graph = [
+	{
+		'@type': 'Person',
+		'@id': personId,
+		name: PERSON.name,
+		url: site.href,
+		image: new URL(PERSON.image, site).href,
+		jobTitle: PERSON.jobTitle,
+		description: PERSON.description,
+		email: `mailto:${PERSON.email}`,
+		affiliation: { '@type': 'CollegeOrUniversity', name: PERSON.affiliation.name, url: PERSON.affiliation.url },
+		alumniOf: PERSON.alumniOf.map((s) => ({ '@type': 'CollegeOrUniversity', name: s.name, url: s.url })),
+		knowsAbout: PERSON.knowsAbout,
+		sameAs: PERSON.sameAs,
+	},
+	{
+		'@type': 'WebSite',
+		'@id': websiteId,
+		url: site.href,
+		name: SITE_TITLE,
+		description: SITE_DESCRIPTION,
+		inLanguage: 'en',
+		publisher: { '@id': personId },
+	},
+	...jsonLd,
+];
+const structuredData = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
 ---
 
 <!-- Global Metadata -->
@@ -27,24 +85,57 @@ const { title, description, image = '/profile_pic.jpeg' } = Astro.props;
 	})();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <meta name="generator" content={Astro.generator} />
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
 
-<!-- Primary Meta Tags -->
-<title>{title}</title>
-<meta name="title" content={title} />
+<!-- Icons: dot-matrix "H". SVG adapts to light/dark tabs; ICO/PNG are fallbacks. -->
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+
+<!-- Primary -->
+<title>{fullTitle}</title>
 <meta name="description" content={description} />
+<meta name="author" content={PERSON.name} />
+<link rel="canonical" href={canonical} />
+<meta
+	name="robots"
+	content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+/>
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="alternate" type="application/rss+xml" title={`${SITE_TITLE} — Blog`} href={new URL('/rss.xml', site)} />
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
-<meta property="og:title" content={title} />
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE_TITLE} />
+<meta property="og:locale" content="en_US" />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, Astro.url)} />
+<meta property="og:image" content={shareImage} />
+<meta property="og:image:alt" content={shareImageAlt} />
+{
+	isDefaultImage && (
+		<>
+			<meta property="og:image:width" content="1200" />
+			<meta property="og:image:height" content="630" />
+		</>
+	)
+}
+{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+{type === 'article' && <meta property="article:author" content={site.href} />}
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={Astro.url} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={new URL(image, Astro.url)} />
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={PERSON.twitter} />
+<meta name="twitter:creator" content={PERSON.twitter} />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={shareImage} />
+<meta name="twitter:image:alt" content={shareImageAlt} />
+
+<!-- Structured data for search engines and AI answer engines -->
+<script is:inline type="application/ld+json" set:html={structuredData} />

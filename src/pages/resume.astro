@@ -5,7 +5,11 @@ import PageIntro from '../components/PageIntro.astro'
 const PDF_URL = '/Harsh_Gujarathi_Resume.pdf'
 ---
 
-<BaseLayout title='Resume' sideBarActiveItemID='resume'>
+<BaseLayout
+	title='Resume'
+	description='Resume of Harsh Gujarathi, software engineer and ML systems researcher. View it here or download the PDF.'
+	sideBarActiveItemID='resume'
+>
 	<PageIntro title='Resume'>
 		<div class='flex flex-wrap gap-3'>
 			<a class='ds-btn ds-btn--primary ds-btn--sm' href={PDF_URL} download>

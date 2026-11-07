@@ -26,7 +26,11 @@ const { page } = Astro.props
 const params = Astro.params
 ---
 
-<BaseLayout title={'Blog - ' + params.tag} sideBarActiveItemID='blog'>
+<BaseLayout
+	title={'Blog - ' + params.tag}
+	description={`Posts by Harsh Gujarathi tagged "${params.tag}".`}
+	sideBarActiveItemID='blog'
+>
 	<PageIntro title={'Blog - ' + params.tag} />
 	{
 		page.data.length === 0 ? (
